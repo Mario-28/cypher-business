@@ -1,0 +1,208 @@
+{{! ═══ leadership tab — deco roster cards (portrait column · stepper stats) ═══ }}
+<section class="cb-tab" data-tab="leadership">
+{{#if business}}
+<div class="cb-section">
+  <div class="cb-section-head">
+    <h3>{{localize "CYBUS.Leadership.Title"}}</h3>
+    {{#if canEdit}}<button type="button" class="cb-btn-primary" data-action="addRole"><i class="fas fa-plus"></i> {{localize "CYBUS.Role.Add"}}</button>{{/if}}
+  </div>
+  <p class="cb-hint">{{localize "CYBUS.Role.DragHint"}}</p>
+
+  <div class="cb-role-grid">
+    {{#each roles as |r|}}
+    <article class="cb-role{{#if r.actorUuid}} filled{{/if}} attr-{{r.domainKey}}" data-role-id="{{r.id}}">
+      <div class="cb-role-side{{#unless r.portrait}} empty{{/unless}}">
+        {{#if r.portrait}}<img class="cb-role-portrait" src="{{r.portrait}}" alt="{{r.actorName}}" />{{else}}<i class="fas fa-user-tie"></i>{{/if}}
+      </div>
+      <div class="cb-role-body">
+        <div class="cb-role-top">
+          <div class="cb-role-head">
+            <input class="cb-role-title{{#unless ../canEdit}} readonly{{/unless}}" data-edit="role.{{r.id}}.title" value="{{r.title}}" {{#unless ../canEdit}}disabled{{/unless}} />
+            <div class="cb-role-tags">
+              {{#if ../canEdit}}
+              <select class="cb-role-domain" data-edit="role.{{r.id}}.domain" title="{{localize "CYBUS.Role.DomainHint"}}">
+                {{#each ../domains as |d|}}<option value="{{d.key}}"{{#if (eq d.key r.domainKey)}} selected{{/if}}>{{d.label}}</option>{{/each}}
+              </select>
+              {{else}}<span class="cb-role-domain-label">{{r.domainLabel}}</span>{{/if}}
+              {{#if r.actorUuid}}<span class="cb-role-eff" title="{{localize "CYBUS.Role.Effectiveness"}}"><i class="fas fa-gauge-high"></i> {{r.effPct}}%</span>{{/if}}
+            </div>
+          </div>
+          <button type="button" class="cb-info" title="{{localize "CYBUS.Role.InfoHint"}}"><i class="fas fa-circle-question"></i><span class="cb-tip"><b>{{r.domainLabel}}</b>{{r.domainDesc}}<em>{{localize "CYBUS.Role.Effectiveness"}}: {{r.effPct}}%</em></span></button>
+          {{#if ../canEdit}}<button type="button" class="cb-btn-mini cb-role-del" data-action="removeRole" data-role-id="{{r.id}}" title="{{localize "CYBUS.App.Delete"}}"><i class="fas fa-trash"></i></button>{{/if}}
+          {{#if ../canEdit}}<button type="button" class="cb-note-btn{{#if r.note}} has-note{{/if}}" data-action="editNote" data-path="role.{{r.id}}.note" data-note-html="{{r.note}}" title="{{localize "CYBUS.Role.NotesHint"}}"><i class="fas fa-note-sticky"></i></button>{{/if}}
+        </div>
+
+        {{#if r.actorUuid}}
+        <div class="cb-role-actor filled">
+          <i class="fas fa-user-check"></i><span class="cb-role-name">{{r.actorName}}</span>
+          {{#if ../canEdit}}<button type="button" class="cb-btn-mini" data-action="clearRole" data-role-id="{{r.id}}" title="{{localize "CYBUS.Role.Clear"}}"><i class="fas fa-xmark"></i></button>{{/if}}
+        </div>
+        {{#if r.isNPC}}
+        <div class="cb-stats">
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.ProductivityHint"}}">{{localize "CYBUS.Role.Productivity"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.productivity" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{r.productivity}}" data-edit="role.{{r.id}}.productivity" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.productivity" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{r.productivity}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{r.pPct}}%"></u></div>
+          </div>
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.MoraleHint"}}">{{localize "CYBUS.Role.Morale"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.morale" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{r.morale}}" data-edit="role.{{r.id}}.morale" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.morale" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{r.morale}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{r.mPct}}%"></u></div>
+          </div>
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.LoyaltyHint"}}">{{localize "CYBUS.Role.Loyalty"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.loyalty" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{r.loyalty}}" data-edit="role.{{r.id}}.loyalty" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.loyalty" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{r.loyalty}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{r.lPct}}%"></u></div>
+          </div>
+        </div>
+        {{else}}
+        <p class="cb-pc-hint"><i class="fas fa-user-shield"></i> {{localize "CYBUS.Role.PCHint"}}</p>
+        {{/if}}
+        {{else}}
+        <div class="cb-role-actor empty"><i class="fas fa-user-plus"></i> {{localize "CYBUS.Role.Empty"}}</div>
+        {{/if}}
+
+        <div class="cb-wage-row" title="{{localize "CYBUS.Role.WageHint"}}">
+          <span class="cb-wage-label"><i class="fas fa-coins"></i> {{localize "CYBUS.Role.Wage"}}</span>
+          {{#if ../canEdit}}
+          <div class="cb-stat-ctl">
+            <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.wage" data-dir="-10"><i class="fas fa-minus"></i></button>
+            <input class="cb-num cb-wage-num" type="number" min="0" step="5" value="{{r.wage}}" data-edit="role.{{r.id}}.wage" />
+            <button type="button" class="cb-step" data-action="stepStat" data-path="role.{{r.id}}.wage" data-dir="10"><i class="fas fa-plus"></i></button>
+          </div>
+          {{else}}<b class="cb-wage-val">{{r.wage}}</b>{{/if}}
+          {{#if r.actorUuid}}<span class="cb-wage-weekly"><i class="fas fa-arrow-right-long"></i> {{r.wageWeekly}} / {{localize "CYBUS.Role.WageWeek"}}</span>{{/if}}
+        </div>
+      </div>
+    </article>
+    {{/each}}
+  </div>
+</div>
+
+<div class="cb-section">
+  <div class="cb-section-head">
+    <h3>{{localize "CYBUS.LW.Title"}}</h3>
+    {{#if canEdit}}<button type="button" class="cb-btn-primary" data-action="addLeadWorker"><i class="fas fa-plus"></i> {{localize "CYBUS.LW.Add"}}</button>{{/if}}
+  </div>
+  <p class="cb-hint">{{localize "CYBUS.LW.Hint"}}</p>
+
+  <div class="cb-lw-grid">
+    {{#each leadWorkers as |w|}}
+    <article class="cb-lw{{#if w.actorUuid}} filled{{/if}} attr-{{w.domainKey}}" data-lw-id="{{w.id}}">
+      <div class="cb-lw-side{{#unless w.portrait}} empty{{/unless}}">
+        {{#if w.portrait}}<img class="cb-lw-portrait" src="{{w.portrait}}" alt="{{w.actorName}}" />{{else}}<i class="fas fa-user-gear"></i>{{/if}}
+      </div>
+      <div class="cb-lw-body">
+        <div class="cb-lw-top">
+          <div class="cb-lw-head">
+            <input class="cb-lw-title{{#unless ../canEdit}} readonly{{/unless}}" data-edit="lw.{{w.id}}.title" value="{{w.title}}" {{#unless ../canEdit}}disabled{{/unless}} />
+            <div class="cb-lw-tags">
+              {{#if ../canEdit}}
+              <select class="cb-role-domain" data-edit="lw.{{w.id}}.domain" title="{{localize "CYBUS.Role.DomainHint"}}">
+                {{#each ../domains as |d|}}<option value="{{d.key}}"{{#if (eq d.key w.domainKey)}} selected{{/if}}>{{d.label}}</option>{{/each}}
+              </select>
+              {{else}}<span class="cb-role-domain-label">{{w.domainLabel}}</span>{{/if}}
+              {{#if w.actorUuid}}<span class="cb-role-eff" title="{{localize "CYBUS.Role.Effectiveness"}}"><i class="fas fa-gauge-high"></i> {{w.effPct}}%</span>{{/if}}
+            </div>
+          </div>
+          <button type="button" class="cb-info" title="{{localize "CYBUS.Role.InfoHint"}}"><i class="fas fa-circle-question"></i><span class="cb-tip"><b>{{w.domainLabel}}</b>{{w.domainDesc}}<em>{{localize "CYBUS.Role.Effectiveness"}}: {{w.effPct}}%</em></span></button>
+          {{#if ../canEdit}}<button type="button" class="cb-btn-mini cb-lw-del" data-action="removeLeadWorker" data-lw-id="{{w.id}}" title="{{localize "CYBUS.App.Delete"}}"><i class="fas fa-trash"></i></button>{{/if}}
+          {{#if ../canEdit}}<button type="button" class="cb-note-btn{{#if w.note}} has-note{{/if}}" data-action="editNote" data-path="lw.{{w.id}}.note" data-note-html="{{w.note}}" title="{{localize "CYBUS.Role.NotesHint"}}"><i class="fas fa-note-sticky"></i></button>{{/if}}
+        </div>
+
+        {{#if w.actorUuid}}
+        <div class="cb-role-actor filled">
+          <i class="fas fa-user-check"></i><span class="cb-role-name">{{w.actorName}}</span>
+          {{#if ../canEdit}}<button type="button" class="cb-btn-mini" data-action="clearLeadWorker" data-lw-id="{{w.id}}" title="{{localize "CYBUS.Role.Clear"}}"><i class="fas fa-xmark"></i></button>{{/if}}
+        </div>
+        {{#if w.isNPC}}
+        <div class="cb-stats">
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.ProductivityHint"}}">{{localize "CYBUS.Role.Productivity"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.productivity" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{w.productivity}}" data-edit="lw.{{w.id}}.productivity" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.productivity" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{w.productivity}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{w.pPct}}%"></u></div>
+          </div>
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.MoraleHint"}}">{{localize "CYBUS.Role.Morale"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.morale" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{w.morale}}" data-edit="lw.{{w.id}}.morale" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.morale" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{w.morale}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{w.mPct}}%"></u></div>
+          </div>
+          <div class="cb-stat">
+            <div class="cb-stat-row">
+              <label title="{{localize "CYBUS.Role.LoyaltyHint"}}">{{localize "CYBUS.Role.Loyalty"}}</label>
+              {{#if ../canEdit}}
+              <div class="cb-stat-ctl">
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.loyalty" data-dir="-1"><i class="fas fa-minus"></i></button>
+                <input class="cb-num" type="number" min="0" max="10" value="{{w.loyalty}}" data-edit="lw.{{w.id}}.loyalty" />
+                <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.loyalty" data-dir="1"><i class="fas fa-plus"></i></button>
+              </div>
+              {{else}}<span class="cb-stat-val">{{w.loyalty}}</span>{{/if}}
+            </div>
+            <div class="cb-stat-track"><u style="width: {{w.lPct}}%"></u></div>
+          </div>
+        </div>
+        {{else}}
+        <p class="cb-pc-hint"><i class="fas fa-user-shield"></i> {{localize "CYBUS.Role.PCHint"}}</p>
+        {{/if}}
+        {{else}}
+        <div class="cb-role-actor empty"><i class="fas fa-user-plus"></i> {{localize "CYBUS.LW.Empty"}}</div>
+        {{/if}}
+
+        <div class="cb-wage-row" title="{{localize "CYBUS.Role.WageHint"}}">
+          <span class="cb-wage-label"><i class="fas fa-coins"></i> {{localize "CYBUS.Role.Wage"}}</span>
+          {{#if ../canEdit}}
+          <div class="cb-stat-ctl">
+            <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.wage" data-dir="-10"><i class="fas fa-minus"></i></button>
+            <input class="cb-num cb-wage-num" type="number" min="0" step="5" value="{{w.wage}}" data-edit="lw.{{w.id}}.wage" />
+            <button type="button" class="cb-step" data-action="stepStat" data-path="lw.{{w.id}}.wage" data-dir="10"><i class="fas fa-plus"></i></button>
+          </div>
+          {{else}}<b class="cb-wage-val">{{w.wage}}</b>{{/if}}
+          {{#if w.actorUuid}}<span class="cb-wage-weekly"><i class="fas fa-arrow-right-long"></i> {{w.wageWeekly}} / {{localize "CYBUS.Role.WageWeek"}}</span>{{/if}}
+        </div>
+      </div>
+    </article>
+    {{/each}}
+  </div>
+</div>
+{{/if}}
+</section>

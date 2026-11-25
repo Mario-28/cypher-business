@@ -1,0 +1,400 @@
+{
+  "CYBUS": {
+    "App": {
+      "Title": "Cypher Business",
+      "Business": "Business",
+      "BusinessName": "Business name",
+      "Description": "What does this business do?",
+      "CreateBusiness": "Create business",
+      "NoBusiness": "No business exists yet. The GM can create the first one.",
+      "NamePrompt": "Name the new business:",
+      "NewBusiness": "New Business",
+      "DeleteConfirm": "Delete \"{name}\" and all its history? This cannot be undone.",
+      "Managers": "Managers",
+      "ManagersHint": "Choose which players may view this business and request week runs (GM approves; editing is GM-only)",
+      "ManagersWhat": "Managers see every tab and can ask you to run the week — they cannot edit anything. Uncheck everyone to keep the business GM-eyes only.",
+      "NoPlayers": "No player users in this world.",
+      "Delete": "Delete"
+    },
+    "Controls": {
+      "Open": "Cypher Business"
+    },
+    "Data": {
+      "Export": "Export backup",
+      "ExportHint": "Download a JSON backup of ALL businesses (state, staff, events, history)",
+      "ExportDone": "Backup exported: {n} business(es).",
+      "Import": "Import backup",
+      "ImportHint": "Replace ALL businesses from a backup JSON file (older backups auto-upgrade)",
+      "ImportConfirm": "Replace ALL current businesses with {n} from \"{file}\"? This cannot be undone — export first if unsure.",
+      "ImportDone": "Backup imported: {n} business(es).",
+      "ImportParseFailed": "That file is not valid JSON.",
+      "ImportInvalid": "That file is not a Cypher Business backup ({reason})."
+    },
+    "Float": {
+      "NoBusiness": "No business yet — the GM creates the first one.",
+      "Pending": "{count} open event(s)",
+      "YourBusinesses": "Businesses",
+      "DragHint": "Click to open · drag to move"
+    },
+    "Tab": {
+      "Main": "Main",
+      "Leadership": "Leadership",
+      "Personnel": "Personnel",
+      "Events": "Events",
+      "Competition": "Competition",
+      "Facility": "Facility",
+      "Products": "Products"
+    },
+    "Attr": {
+      "profit": "Profit",
+      "marketing": "Marketing",
+      "personnel": "Personell",
+      "leadership": "Leadership",
+      "morale": "Morale",
+      "danger": "Danger"
+    },
+    "Main": {
+      "Week": "Week",
+      "Next": "Next run",
+      "Cash": "Treasury",
+      "RunWeek": "Run Week",
+      "RunAll": "All",
+      "RunAllHint": "Run a week for every business (GM)",
+      "Attributes": "Attribute Overview",
+      "ProfitHistory": "Weekly Net & History",
+      "WeeklySpend": "Weekly Spend",
+      "OpenCalendaria": "Open in Calendaria",
+      "NoCalendaria": "Calendaria not active — weeks use an internal counter",
+      "AddBanner": "Add banner",
+      "ChangeBanner": "Change banner",
+      "RemoveBanner": "Remove banner",
+      "WeekPreview": "Week preview",
+      "PreviewHint": "Projected ledger for the coming week",
+      "Trends": "Trends",
+      "TrendsHint": "Weekly income, expenses and attribute trends",
+      "Expenses": "Expenses",
+      "NetProfit": "Net Profit",
+      "LedgerPairHint": "Projected for the coming week — updates live as you move the sliders above. Net = income after wages, spending and cost of goods."
+    },
+    "Report": {
+      "PreviewTitle": "Week Preview",
+      "TrendsTitle": "Weekly Trends",
+      "CashAfter": "Treasury after",
+      "ByProduct": "By product",
+      "Units": "units",
+      "NoLines": "Nothing to project yet.",
+      "NothingToPlot": "Nothing to plot yet — run a week first.",
+      "ForecastNote": "Expected baseline — the weekly event and rival moves still roll when the week runs.",
+      "Ser": {
+        "income": "Income",
+        "expenses": "Expenses",
+        "net": "Projected net",
+        "cash": "Treasury"
+      }
+    },
+    "Spend": {
+      "Marketing": "Marketing push",
+      "MarketingHint": "raises Marketing, draws customers",
+      "Maintenance": "Upkeep & security",
+      "MaintenanceHint": "keeps facilities standing, calms the streets",
+      "Wages": "Wage level",
+      "WagesHint": "Below 100% erodes crew morale and risks quits (60% bites hard); above 100% buys goodwill.",
+      "WageStarve": "starvation pay — the crew sours",
+      "WageLean": "lean pay — grumblers drift off",
+      "WageGenerous": "generous — goodwill grows",
+      "WageLavish": "lavish — the district hears of it"
+    },
+    "Leadership": {
+      "Title": "Leadership Roster"
+    },
+    "Role": {
+      "DragHint": "Drag an actor from the sidebar onto a role to assign it.",
+      "Add": "Add role",
+      "NewPrompt": "Name the new role:",
+      "New": "New Role",
+      "Empty": "Unassigned",
+      "Note": "Duties / notes",
+      "Clear": "Remove assignee",
+      "DomainHint": "Business segment this role influences",
+      "InfoHint": "What this role does",
+      "Effectiveness": "Effectiveness",
+      "PCHint": "A player character holds this post — stat tracking applies to NPC actors only.",
+      "Productivity": "Productivity",
+      "ProductivityHint": "Feeds the weekly income multiplier. A productive roster earns more from the same demand.",
+      "Morale": "Morale",
+      "MoraleHint": "Chases the business mood. Low morale drags this leader's productivity down; high morale lifts it — and the overall morale with it.",
+      "Loyalty": "Loyalty",
+      "LoyaltyHint": "Erodes when morale drops, problems fester or events sour the crew. At zero, the leader walks out for good.",
+      "Strength": "Strength",
+      "StrengthHint": "Derived: the mean of productivity, morale and loyalty. No direct edits — it follows those three.",
+      "NotesHint": "Panel notes — hover to read, click to edit",
+      "NotesEmpty": "No notes yet — click the note icon to write some.",
+      "Wage": "Wage",
+      "WageHint": "Weekly base wage for this post. Charged only while someone holds it — scaled by the wage level and any finance discounts.",
+      "WageWeek": "wk",
+      "Domains": {
+        "leadership": {
+          "Label": "Leadership",
+          "Desc": "The face of the business. Filled leaders push the Leadership attribute toward its target and add weight against rival moves. Their productivity feeds the weekly income multiplier."
+        },
+        "operations": {
+          "Label": "Operations",
+          "Desc": "Runs the shop floor. Operations roles raise facility & staff efficiency — more product out of the same buildings."
+        },
+        "marketing": {
+          "Label": "Marketing",
+          "Desc": "Sells the dream. Marketing roles widen the demand factor, pushing more units out the door each week."
+        },
+        "finance": {
+          "Label": "Finance",
+          "Desc": "Watches the coin. Finance roles cut wages, marketing and upkeep bills — up to 20% off the weekly spending."
+        },
+        "security": {
+          "Label": "Security",
+          "Desc": "Keeps knives in drawers. Security roles blunt rival attacks and calm the neighborhood, softening the danger drift."
+        }
+      }
+    },
+    "NoteEditor": {
+      "Title": "Panel Notes",
+      "Save": "Save",
+      "Cancel": "Cancel",
+      "ListHint": "Bullet list"
+    },
+    "Rulebook": {
+      "Title": "Business Manual",
+      "GmEdition": "Business Manual — GM Edition",
+      "PlayerEdition": "The Player's Handbook"
+    },
+    "LW": {
+      "Title": "Leading Workers",
+      "Hint": "Promoted crew. Drag actors onto the slots — they carry the same stats as leadership and feed the engine at half weight. Each filled slot adds up to +1% income by strength.",
+      "Empty": "Open slot",
+      "Add": "Add slot",
+      "New": "New Lead",
+      "NewPrompt": "Leading worker title:",
+      "Weight": "counts at half weight"
+    },
+    "Worker": {
+      "Headcount": "on payroll",
+      "HireOne": "Hire one",
+      "HireFive": "Hire five",
+      "FireConfirm": "Let {name} go?",
+      "Name": "Name",
+      "Age": "Age",
+      "Morale": "Morale",
+      "MoraleHint": "0–10; feeds business morale",
+      "Productivity": "Productivity",
+      "ProductivityHint": "0–10; skill of the work",
+      "Effectiveness": "Eff.",
+      "EffectivenessHint": "derived from morale + productivity; drives production capacity",
+      "Gender": "Gen.",
+      "GenderF": "Female",
+      "GenderM": "Male",
+      "GenderToggle": "click to change",
+      "Profile": "Worker file",
+      "Traits": "Traits",
+      "LookHair": "Hair",
+      "LookEyes": "Eyes",
+      "LookHeight": "Height",
+      "LookWeight": "Weight",
+      "LookBuild": "Build",
+      "LookBeauty": "Beauty",
+      "Wage": "Wage/wk",
+      "Note": "Note",
+      "None": "Nobody on payroll yet. Hire some workers or roll a crew.",
+      "Fire": "Fire"
+    },
+    "Events": {
+      "Pending": "Open events",
+      "NoPending": "No open events. The dice are kind this week.",
+      "Journal": "Event journal",
+      "NoJournal": "Nothing resolved yet. The story is just beginning.",
+      "JournalSelectAll": "all",
+      "JournalSelectAllHint": "check / uncheck every entry",
+      "JournalCheckHint": "select this entry for deletion",
+      "JournalClear": "Clear selected",
+      "JournalClearHint": "GM: permanently delete the checked journal entries. History is scrubbed — nothing is re-run.",
+      "JournalNoneSelected": "Tick at least one journal entry first.",
+      "JournalCleared": "{count} journal entries cleared",
+      "JournalClearedLog": "{count} journal entries cleared from the record (GM).",
+      "DueIn": "due in",
+      "ResolveBy": "resolve by",
+      "Force": "Force event",
+      "ForceHint": "GM: roll an extra story event on top of the weekly one (never blocked).",
+      "Forced": "the GM forced a new event",
+      "Delete": "Remove event (GM fiat — no consequences)",
+      "Deleted": "event removed by the GM",
+      "Stakes": {
+        "Success": "On success",
+        "Failure": "On failure",
+        "Cash": "Cash",
+        "Fire": "the least productive worker is fired",
+        "Walkout": "the least loyal leader walks out",
+        "Loyalty": "leader loyalty",
+        "WorkerMorale": "crew morale",
+        "WorkerProd": "crew output",
+        "RoleMorale": "officer morale",
+        "RoleProd": "officer output",
+        "ProductDemand": "product demand",
+        "FacilityCondition": "facility condition",
+        "Rivals": "rival strength",
+        "PressureReset": "rival pressure resets",
+        "Hire": "hires {count} worker(s)"
+      },
+      "CatInfo": {
+        "global": "The world at large — politics, weather, war, fashion. Nobody is immune.",
+        "business": "Internal trouble: bookkeeping, suppliers, promises, paperwork.",
+        "leadership": "Your own command structure — egos, schemes, resignations.",
+        "personnel": "The crew: accidents, grievances, and the wrong person in the wrong job.",
+        "competition": "Rivals making moves — they always attack your weakest flank.",
+        "facility": "The physical plant: boilers, roofs, rats, and everything that can break.",
+        "product": "What you sell — quality scares, bad batches, missed trends.",
+        "crisis": "The house is on fire. Serious trouble with real teeth — resolve it fast."
+      },
+      "Success": "Success",
+      "Failure": "Failure",
+      "Cat": {
+        "global": "Global",
+        "business": "Business",
+        "leadership": "Leadership",
+        "personnel": "Personnel",
+        "competition": "Competition",
+        "facility": "Facility",
+        "product": "Product",
+        "crisis": "Crisis"
+      },
+      "Outcome": {
+        "success": "resolved",
+        "fail": "failed",
+        "expired": "expired"
+      },
+      "Difficulty": "Severity",
+      "SeverityHint": "Cypher difficulty 1-10. Higher severity means more steps on bold plans and harsher failure stakes.",
+      "Solutions": "Ways out",
+      "Steps": "steps",
+      "LogStep": "Log step",
+      "LogStepHint": "GM: mark one table step done for this way out (e.g. a scene, a roll, a negotiation)",
+      "SuccessLocked": "log all steps to declare success",
+      "SuccessReady": "Declare success",
+      "FailureReady": "Declare failure",
+      "Complete": "done",
+      "PlayerHint": "The GM is working on this. Watch the table, not the ledger.",
+      "DcHint": "Target number for a roll against this event (difficulty × 3)",
+      "LinkRoll": "Link roll",
+      "LinkRollHint": "GM: the next roll in chat resolves this way out — total vs DC. Click again to cancel. 90s window.",
+      "LinkWaiting": "Waiting for roll…",
+      "LinkExpired": "Roll link expired — no roll in time",
+      "LinkResolvedAlready": "That event is no longer pending (already resolved or expired).",
+      "LinkedRollLine": "{roller} rolled {total} vs DC {dc}"
+    },
+    "Pool": {
+      "might": "Might",
+      "speed": "Speed",
+      "intellect": "Intellect"
+    },
+    "Skill": {
+      "inability": "Inability",
+      "none": "Untrained",
+      "trained": "Trained",
+      "specialized": "Specialized"
+    },
+    "Comp": {
+      "Hint": "Each week every rival tests Aggression + d6 against your Marketing + Leadership + d6. Winning big steals demand; losing badly costs you marketing.",
+      "Add": "Add rival",
+      "Random": "Roll a rival",
+      "None": "No rivals — for now. The market abhors a vacuum.",
+      "Strength": "Strength",
+      "Aggression": "Aggression",
+      "Focus": "M.O.",
+      "FocusHint": "Their method of operations — what they actually do to hurt you.",
+      "Note": "Note",
+      "DescPlaceholder": "What is this house, and why do they hate you?",
+      "GenDesc": "Rewrite",
+      "GenDescHint": "Regenerate the house description from its M.O. and temperament.",
+      "KeyFigures": "Key figures",
+      "AddFigure": "Add key figure",
+      "RerollFigureHint": "Replace this figure with a freshly rolled one (keeps the slot).",
+      "FigureTitleHint": "Their office in the house — The Money, The Face, Chief Enforcer…",
+      "FigureNotePh": "GM note (leverage, secrets, tells)…",
+      "Description": "Description",
+      "Pressure": "Pressure",
+      "PressureHint": "Builds when the rival wins the weekly market contest. At 10 they make a move — an event lands on the Events tab. Dealing with the event, or beating them weekly, eases it.",
+      "FigsToggle": "Show / hide key figures",
+      "Intel": "House intel",
+      "IntelToggle": "Show / hide the rival's profile: modus operandi, products & services, facilities",
+      "MOFull": "Modus operandi",
+      "Services": "Products & services",
+      "RivalFac": "Facilities",
+      "IntelEditHint": "Right-click to edit"
+    },
+    "Fac": {
+      "Hint": "Facilities set capacity and drive the weekly efficiency multiplier and the crew's mood. Condition decays without upkeep.",
+      "Add": "Add facility",
+      "None": "No facilities. Working out of a back room (50% efficiency).",
+      "Condition": "Condition",
+      "ConditionHint": "Drives production efficiency; the crew's morale drifts toward it each week.",
+      "Renovate": "Renovate",
+      "RenovateHint": "Pay {cost} shins to restore +{gain}% condition on the spot.",
+      "RenovateBroke": "Not enough cash in the treasury to renovate.",
+      "RenovatePristine": "This facility is already in perfect shape.",
+      "RenovateMissing": "That facility no longer exists.",
+      "Capacity": "Capacity",
+      "CapacityHint": "Personnel the premises can hold. Exceed total capacity and cramped quarters sour morale.",
+      "Note": "Note",
+      "Visit": "Visit facility",
+      "VisitHint": "Travel to this facility's scene (this client only)",
+      "ClearScene": "Detach scene (keeps the card)",
+      "DropScene": "Drop a scene from the sidebar to give this card its image and a visit button"
+    },
+    "Prod": {
+      "Hint": "Active lines sell weekly: demand × marketing, scaled by facility condition and throttled by staffing — each line lists its crew requirement. Value is the per-unit profit. Demand drifts back to its baseline.",
+      "Add": "Add line",
+      "None": "Nothing on offer yet.",
+      "Kind": "Type",
+      "Product": "Product",
+      "Service": "Service",
+      "Value": "Value",
+      "ValueHint": "Profit per unit sold, in shins — the crew's productivity adds a price premium on top.",
+      "Workers": "Crew needed",
+      "WorkersHint": "Headcount this line takes to run at full tilt. Short on workers and every line scales down proportionally.",
+      "Demand": "Demand",
+      "DemandHint": "Weekly pull for this line, scaled by the marketing attribute. Rivals can undercut it; it drifts back toward the base each week.",
+      "BaseDemand": "Base demand",
+      "BaseDemandHint": "The baseline demand settles toward — raise it with marketing pushes and good weeks.",
+      "StaffWk": "crew on payroll / crew needed",
+      "StaffHint": "Workers on the payroll versus the headcount the active lines demand. Hire or slim the catalogue to close the gap.",
+      "Toggle": "Toggle active",
+      "Paused": "Paused",
+      "ClearItem": "Detach item (keeps the card)",
+      "DropItem": "Drop an item from the sidebar to give this card its image",
+      "OpenItemHint": "Open the linked item sheet"
+    },
+    "ProjLine": {
+      "units": "Next week:",
+      "revenue": "revenue"
+    },
+    "Socket": {
+      "NotManager": "You are not a manager of this business.",
+      "RequestSent": "Week request sent to the GM.",
+      "WeekRequest": "Run a business week?",
+      "WeekRequestText": "{user} wants to run a week for \"{business}\".",
+      "RunIt": "Run the week",
+      "ClaimedBy": "{gm} is running the week.",
+      "AlreadyRan": "Another GM already ran this week."
+    },
+    "Theme": {
+      "Label": "Theme"
+    },
+    "Settings": {
+      "Theme": {
+        "Name": "Theme",
+        "Hint": "Visual theme for all Cypher Business windows (per user)."
+      },
+      "CanvasIcon": {
+        "Name": "Floating canvas button",
+        "Hint": "Show the draggable Cypher Business medallion on the game canvas."
+      }
+    }
+  }
+}

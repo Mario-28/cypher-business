@@ -1,0 +1,27 @@
+<nav class="cb-nav">
+  <div class="cb-nav-tabs">
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="main"><i class="fas fa-chart-line"></i> {{localize "CYBUS.Tab.Main"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="leadership"><i class="fas fa-crown"></i> {{localize "CYBUS.Tab.Leadership"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="personnel"><i class="fas fa-users"></i> {{localize "CYBUS.Tab.Personnel"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="events"><i class="fas fa-dice"></i> {{localize "CYBUS.Tab.Events"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="competition"><i class="fas fa-chess"></i> {{localize "CYBUS.Tab.Competition"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="facility"><i class="fas fa-warehouse"></i> {{localize "CYBUS.Tab.Facility"}}</button>
+    <button type="button" class="cb-nav-item" data-action="switchTab" data-tab="products"><i class="fas fa-box-open"></i> {{localize "CYBUS.Tab.Products"}}</button>
+  </div>
+  <div class="cb-nav-side">
+    {{#if isGM}}<button type="button" class="cb-btn-mini" data-action="createBusiness" title="{{localize "CYBUS.App.CreateBusiness"}}"><i class="fas fa-plus"></i></button>{{/if}}
+    {{#if businesses.length}}
+    <select class="cb-select" data-edit="selectBusiness" title="{{localize "CYBUS.App.Business"}}">
+      {{#each businesses as |b|}}
+      <option value="{{b.id}}" {{#if (eq b.id ../business.id)}}selected{{/if}}>{{b.name}}</option>
+      {{/each}}
+    </select>
+    {{/if}}
+    <select class="cb-select" data-edit="theme" title="{{localize "CYBUS.Theme.Label"}}">
+      {{#each themes as |t|}}
+      <option value="{{t.id}}" {{#if (eq t.id ../theme)}}selected{{/if}}>{{t.name}}</option>
+      {{/each}}
+    </select>
+    <button type="button" class="cb-btn-mini" data-action="openRulebook" title="{{localize "CYBUS.Rulebook.Title"}}"><i class="fas fa-book"></i></button>
+  </div>
+</nav>

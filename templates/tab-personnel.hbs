@@ -1,0 +1,67 @@
+<section class="cb-tab" data-tab="personnel">
+  {{#if business}}
+  <div class="cb-section-head">
+    <span class="cb-count">{{workers.length}} {{localize "CYBUS.Worker.Headcount"}}</span>
+    {{#if canEdit}}
+    <div class="cb-head-btns">
+      <button type="button" class="cb-btn-ghost" data-action="hireOne"><i class="fas fa-user-plus"></i> {{localize "CYBUS.Worker.HireOne"}}</button>
+      <button type="button" class="cb-btn-ghost" data-action="hireFive"><i class="fas fa-people-group"></i> {{localize "CYBUS.Worker.HireFive"}}</button>
+    </div>
+    {{/if}}
+  </div>
+  {{#if workers.length}}
+  <div class="cb-table-wrap">
+    <table class="cb-table compact">
+      <thead>
+        <tr>
+          <th>{{localize "CYBUS.Worker.Name"}}</th>
+          <th class="cb-gender-col" title="{{localize "CYBUS.Worker.Gender"}}">{{localize "CYBUS.Worker.Gender"}}</th>
+          <th>{{localize "CYBUS.Worker.Age"}}</th>
+          <th title="{{localize "CYBUS.Worker.MoraleHint"}}">{{localize "CYBUS.Worker.Morale"}}</th>
+          <th title="{{localize "CYBUS.Worker.ProductivityHint"}}">{{localize "CYBUS.Worker.Productivity"}}</th>
+          <th title="{{localize "CYBUS.Worker.EffectivenessHint"}}">{{localize "CYBUS.Worker.Effectiveness"}}</th>
+          <th>{{localize "CYBUS.Worker.Wage"}}</th>
+          <th>{{localize "CYBUS.Worker.Note"}}</th>
+          {{#if canEdit}}<th></th>{{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each workers as |w|}}
+        <tr>
+          <td>
+            <div class="cb-name-cell">
+              <input type="text" value="{{w.name}}" data-edit="worker.{{w.id}}.name" {{#unless ../canEdit}}disabled{{/unless}}>
+              <button type="button" class="cb-worker-info" aria-label="{{localize "CYBUS.Worker.Profile"}}"
+                      data-worker-id="{{w.id}}" data-business-id="{{../business.id}}"><i class="fas fa-id-badge"></i></button>
+            </div>
+          </td>
+          <td class="cb-gender">
+            {{#if ../canEdit}}
+            <button type="button" class="cb-gender-toggle {{#if (eq w.gender 'f')}}is-f{{else}}is-m{{/if}}"
+                    data-action="cycleGender" data-worker-id="{{w.id}}"
+                    title="{{#if (eq w.gender 'f')}}{{localize "CYBUS.Worker.GenderF"}}{{else}}{{localize "CYBUS.Worker.GenderM"}}{{/if}} — {{localize "CYBUS.Worker.GenderToggle"}}">
+              <i class="fas {{#if (eq w.gender 'f')}}fa-venus{{else}}fa-mars{{/if}}"></i>
+            </button>
+            {{else}}
+            <i class="fas {{#if (eq w.gender 'f')}}fa-venus{{else}}fa-mars{{/if}}" title="{{#if (eq w.gender 'f')}}{{localize "CYBUS.Worker.GenderF"}}{{else}}{{localize "CYBUS.Worker.GenderM"}}{{/if}}"></i>
+            {{/if}}
+          </td>
+          <td><input class="cb-num" type="number" min="16" max="99" value="{{w.age}}" data-edit="worker.{{w.id}}.age" {{#unless ../canEdit}}disabled{{/unless}}></td>
+          <td><input class="cb-num" type="number" min="0" max="10" value="{{w.morale}}" data-edit="worker.{{w.id}}.morale" {{#unless ../canEdit}}disabled{{/unless}}></td>
+          <td><input class="cb-num" type="number" min="0" max="10" value="{{w.productivity}}" data-edit="worker.{{w.id}}.productivity" {{#unless ../canEdit}}disabled{{/unless}}></td>
+          <td><span class="cb-eff" title="{{localize "CYBUS.Worker.EffectivenessHint"}}">{{w.eff}}</span></td>
+          <td><input class="cb-num" type="number" min="0" value="{{w.wage}}" data-edit="worker.{{w.id}}.wage" {{#unless ../canEdit}}disabled{{/unless}}></td>
+          <td><input class="cb-cell-note" type="text" value="{{w.note}}" data-edit="worker.{{w.id}}.note" {{#unless ../canEdit}}disabled{{/unless}}></td>
+          {{#if ../canEdit}}<td><button type="button" class="cb-btn-mini danger" data-action="fireWorker" data-worker-id="{{w.id}}"><i class="fas fa-user-minus"></i></button></td>{{/if}}
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.Worker.None"}}</p></div>
+  {{/if}}
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.App.NoBusiness"}}</p></div>
+  {{/if}}
+</section>

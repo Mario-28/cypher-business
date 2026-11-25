@@ -1,0 +1,96 @@
+<section class="cb-tab" data-tab="events">
+  {{#if business}}
+  <div class="cb-events-grid">
+    <div class="cb-panel">
+      <h4><i class="fas fa-dice"></i> {{localize "CYBUS.Events.Pending"}} ({{business.story.pending.length}})
+      {{#if isGM}}<button type="button" class="cb-btn-ghost cb-force-event" data-action="forceEvent" title="{{localize "CYBUS.Events.ForceHint"}}"><i class="fas fa-bolt"></i> {{localize "CYBUS.Events.Force"}}</button>{{/if}}
+      </h4>
+      {{#if business.story.pending.length}}
+        {{#each storyEvents as |e|}}
+        <div class="cb-event-card cat-{{e.cat}} {{#if (lt e.dueIn 1)}}urgent{{/if}}">
+          <div class="cb-event-head">
+            <i class="{{e.icon}} cb-event-icon" aria-hidden="true"></i>
+            <strong class="cb-event-title">{{e.title}}</strong>
+            <span class="cb-event-badges">
+              <span class="cb-diff-badge" title="{{localize "CYBUS.Events.SeverityHint"}}">{{localize "CYBUS.Events.Difficulty"}} {{e.difficulty}}</span>
+            </span>
+            {{#if e.isGM}}<button type="button" class="cb-icon-btn cb-event-del" data-action="deleteEvent" data-event-id="{{e.id}}" title="{{localize "CYBUS.Events.Delete"}}"><i class="fas fa-trash" aria-hidden="true"></i></button>{{/if}}
+          </div>
+          <div class="cb-event-sub">
+            <span class="cb-cat-badge" title="{{localize (concat "CYBUS.Events.CatInfo." e.cat)}}">{{localize (concat "CYBUS.Events.Cat." e.cat)}}</span>
+            <span class="cb-event-meta">
+              <span><i class="fas fa-calendar-day" aria-hidden="true"></i> {{e.dateLabel}}</span>
+              <span class="cb-deadline {{#if (lt e.dueIn 1)}}urgent{{/if}}"><i class="fas fa-hourglass-half" aria-hidden="true"></i> {{#if e.dueDateLabel}}{{localize "CYBUS.Events.ResolveBy"}}: {{e.dueDateLabel}}{{else}}{{localize "CYBUS.Events.DueIn"}}: {{e.dueIn}}w{{/if}}</span>
+            </span>
+          </div>
+          <p class="cb-event-text">{{e.text}}</p>
+          {{#if e.isGM}}
+          <div class="cb-event-solutions">
+            {{#each e.solutions as |s|}}
+            <div class="cb-solution-card">
+              <div class="cb-solution-head">
+                <strong class="cb-solution-label">{{s.label}}</strong>
+                <span class="cb-solution-pool">{{s.poolLabel}} · {{s.skillLabel}}{{#if s.asset}} +{{s.asset}}{{/if}}</span>
+                <span class="cb-solution-dc" title="{{localize "CYBUS.Events.DcHint"}}">DC {{e.dc}}</span>
+                <span class="cb-solution-pips" title="{{localize "CYBUS.Events.Steps"}}">
+                  {{#each s.pips as |p|}}<i class="{{#if p.done}}fas{{else}}far{{/if}} fa-circle"></i>{{/each}}
+                </span>
+              </div>
+              <p class="cb-solution-desc">{{s.desc}}</p>
+              <div class="cb-event-stakes">
+                {{#if s.successText}}<div class="cb-stake-line ok"><i class="fas fa-circle-arrow-up" aria-hidden="true"></i> <span>{{localize "CYBUS.Events.Stakes.Success"}}:</span> {{s.successText}}</div>{{/if}}
+                {{#if s.failText}}<div class="cb-stake-line bad"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> <span>{{localize "CYBUS.Events.Stakes.Failure"}}:</span> {{s.failText}}</div>{{/if}}
+              </div>
+              <div class="cb-solution-actions">
+                <button type="button" class="cb-btn-ghost cb-step-btn" data-action="logEventStep" data-event-id="{{e.id}}" data-solution="{{s.index}}" title="{{localize "CYBUS.Events.LogStepHint"}}"><i class="fas fa-list-check"></i> {{localize "CYBUS.Events.LogStep"}}</button>
+                <button type="button" class="cb-btn-ghost cb-link-btn{{#if s.linkWaiting}} waiting{{/if}}" data-action="linkRoll" data-event-id="{{e.id}}" data-solution="{{s.index}}" title="{{localize "CYBUS.Events.LinkRollHint"}}">
+                  {{#if s.linkWaiting}}<i class="fas fa-satellite-dish fa-beat"></i> {{localize "CYBUS.Events.LinkWaiting"}}{{else}}<i class="fas fa-dice-d20"></i> {{localize "CYBUS.Events.LinkRoll"}}{{/if}}
+                </button>
+                {{#if s.ready}}
+                <button type="button" class="cb-btn-ghost cb-resolve-btn ok" data-action="resolveEventSolution" data-event-id="{{e.id}}" data-solution="{{s.index}}" data-outcome="success"><i class="fas fa-check"></i> {{localize "CYBUS.Events.SuccessReady"}}</button>
+                {{else}}
+                <button type="button" class="cb-btn-ghost cb-resolve-btn ok" disabled title="{{localize "CYBUS.Events.SuccessLocked"}}"><i class="fas fa-lock"></i> {{localize "CYBUS.Events.SuccessLocked"}}</button>
+                {{/if}}
+                <button type="button" class="cb-btn-ghost cb-resolve-btn bad" data-action="resolveEventSolution" data-event-id="{{e.id}}" data-solution="{{s.index}}" data-outcome="fail"><i class="fas fa-xmark"></i> {{localize "CYBUS.Events.FailureReady"}}</button>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          {{else}}
+          <p class="cb-event-player-hint"><i class="fas fa-eye" aria-hidden="true"></i> {{localize "CYBUS.Events.PlayerHint"}}</p>
+          {{/if}}
+        </div>
+        {{/each}}
+      {{else}}
+        <p class="cb-hint">{{localize "CYBUS.Events.NoPending"}}</p>
+      {{/if}}
+    </div>
+    <div class="cb-panel">
+      <h4><i class="fas fa-book-open"></i> {{localize "CYBUS.Events.Journal"}}
+      {{#if isGM}}
+      <span class="cb-journal-tools">
+        <label class="cb-journal-all" title="{{localize "CYBUS.Events.JournalSelectAllHint"}}"><input type="checkbox" class="cb-journal-check-all"> {{localize "CYBUS.Events.JournalSelectAll"}}</label>
+        <button type="button" class="cb-btn-ghost cb-journal-clear" data-action="clearJournal" title="{{localize "CYBUS.Events.JournalClearHint"}}"><i class="fas fa-trash"></i> {{localize "CYBUS.Events.JournalClear"}}</button>
+      </span>
+      {{/if}}
+      </h4>
+      <div class="cb-log-list">
+        {{#each business.story.journal as |j|}}
+        <div class="cb-log-line outcome-{{j.outcome}}">
+          <div class="cb-log-head">
+            {{#if ../isGM}}<input type="checkbox" class="cb-journal-check" data-journal-id="{{j.id}}" title="{{localize "CYBUS.Events.JournalCheckHint"}}">{{/if}}
+            <span class="cb-log-title">{{j.title}}</span>
+          </div>
+          <span class="cb-log-text">{{#if j.note}}{{j.note}}{{/if}}</span>
+          <span class="cb-log-meta">{{localize (concat "CYBUS.Events.Cat." j.cat)}} · {{localize (concat "CYBUS.Events.Outcome." j.outcome)}}{{#if j.solution}} · {{j.solution}}{{/if}}{{#if j.dc}} · DC {{j.dc}}{{/if}} · {{localize "CYBUS.Main.Week"}} {{j.week}}</span>
+        </div>
+        {{else}}
+        <p class="cb-hint">{{localize "CYBUS.Events.NoJournal"}}</p>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.App.NoBusiness"}}</p></div>
+  {{/if}}
+</section>

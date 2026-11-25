@@ -1,0 +1,101 @@
+<section class="cb-tab" data-tab="products">
+  {{#if business}}
+  <div class="cb-section-head">
+    <p class="cb-hint"><i class="fas fa-box-open"></i> {{localize "CYBUS.Prod.Hint"}}</p>
+    {{#if products.length}}
+    <span class="cb-cap-chip" title="{{localize "CYBUS.Prod.StaffHint"}}"><i class="fas fa-users"></i> {{projection.crew}} / {{projection.crewNeeded}} {{localize "CYBUS.Prod.StaffWk"}}</span>
+    {{/if}}
+    {{#if canEdit}}<button type="button" class="cb-btn-ghost" data-action="addProduct"><i class="fas fa-plus"></i> {{localize "CYBUS.Prod.Add"}}</button>{{/if}}
+  </div>
+  {{#if business.products.length}}
+  <div class="cb-prod-grid">
+    {{#each products as |p|}}
+    <div class="cb-prod-card{{#unless p.hasItem}} no-img{{/unless}}{{#unless p.active}} inactive{{/unless}}" data-prod-id="{{p.id}}">
+      <div class="cb-prod-hero" {{#if p.hasItem}}style="background-image: url('{{p.img}}')"{{/if}}>
+        <div class="cb-prod-hero-shade"></div>
+        {{#if ../canEdit}}{{#if p.hasItem}}
+        <button type="button" class="cb-prod-unitem" data-action="clearProductItem" data-prod-id="{{p.id}}" title="{{localize "CYBUS.Prod.ClearItem"}}"><i class="fas fa-xmark"></i></button>
+        {{/if}}{{/if}}
+        <div class="cb-prod-hero-top">
+          <span class="cb-prod-kind-pill">{{#if (eq p.kind "service")}}{{localize "CYBUS.Prod.Service"}}{{else}}{{localize "CYBUS.Prod.Product"}}{{/if}}</span>
+          {{#if ../canEdit}}
+          <button type="button" class="cb-btn-mini {{#if p.active}}on{{/if}}" data-action="toggleProduct" data-prod-id="{{p.id}}" title="{{localize "CYBUS.Prod.Toggle"}}">
+            {{#if p.active}}<i class="fas fa-check"></i>{{else}}<i class="fas fa-pause"></i>{{/if}}
+          </button>
+          {{else}}
+          {{#unless p.active}}<span class="cb-prod-paused"><i class="fas fa-pause"></i> {{localize "CYBUS.Prod.Paused"}}</span>{{/unless}}
+          {{/if}}
+        </div>
+        <div class="cb-prod-hero-bottom">
+          <div class="cb-prod-titleplate">
+            {{#if ../canEdit}}
+            <input class="cb-prod-name" type="text" value="{{p.name}}" data-edit="prod.{{p.id}}.name">
+            {{else}}
+            <span class="cb-prod-name">{{p.name}}</span>
+            {{/if}}
+            {{#if p.hasItem}}
+            <button type="button" class="cb-prod-item-tag" data-action="openProductItem" data-prod-id="{{p.id}}" title="{{localize "CYBUS.Prod.OpenItemHint"}}"><i class="fas fa-tag"></i> {{p.itemName}}</button>
+            {{/if}}
+          </div>
+          <div class="cb-prod-hero-tools">
+            {{#if ../canEdit}}<button type="button" class="cb-btn-mini danger" data-action="removeProduct" data-prod-id="{{p.id}}"><i class="fas fa-trash"></i></button>{{/if}}
+          </div>
+        </div>
+      </div>
+      <div class="cb-prod-body">
+        {{#if ../canEdit}}
+        <label class="cb-prod-kind-sel">{{localize "CYBUS.Prod.Kind"}}
+          <select data-edit="prod.{{p.id}}.kind">
+            <option value="product" {{#if (eq p.kind "product")}}selected{{/if}}>{{localize "CYBUS.Prod.Product"}}</option>
+            <option value="service" {{#if (eq p.kind "service")}}selected{{/if}}>{{localize "CYBUS.Prod.Service"}}</option>
+          </select>
+        </label>
+        {{/if}}
+        <div class="cb-prod-slider">
+          <div class="cb-prod-slider-head">
+            <span class="cb-prod-stat-label"><i class="fas fa-gem"></i> {{localize "CYBUS.Prod.Value"}}</span>
+            <span class="cb-prod-slider-val">{{p.value}}<em>/100</em></span>
+          </div>
+          <input type="range" class="cb-prod-range" min="0" max="100" value="{{p.value}}" data-edit="prod.{{p.id}}.value" {{#unless ../canEdit}}disabled{{/unless}}>
+          <p class="cb-prod-stat-hint">{{localize "CYBUS.Prod.ValueHint"}}</p>
+        </div>
+        <div class="cb-prod-slider">
+          <div class="cb-prod-slider-head">
+            <span class="cb-prod-stat-label"><i class="fas fa-user-gear"></i> {{localize "CYBUS.Prod.Workers"}}</span>
+            <span class="cb-prod-slider-val">{{p.workersDemand}}</span>
+          </div>
+          <input type="range" class="cb-prod-range" min="0" max="10" value="{{p.workersDemand}}" data-edit="prod.{{p.id}}.workersDemand" {{#unless ../canEdit}}disabled{{/unless}}>
+          <p class="cb-prod-stat-hint">{{localize "CYBUS.Prod.WorkersHint"}}</p>
+        </div>
+        <div class="cb-prod-slider">
+          <div class="cb-prod-slider-head">
+            <span class="cb-prod-stat-label"><i class="fas fa-fire"></i> {{localize "CYBUS.Prod.Demand"}}</span>
+            <span class="cb-prod-slider-val">{{p.demand}}<em>/10</em></span>
+          </div>
+          <input type="range" class="cb-prod-range" min="0" max="10" value="{{p.demand}}" data-edit="prod.{{p.id}}.demand" {{#unless ../canEdit}}disabled{{/unless}}>
+          <p class="cb-prod-stat-hint">{{localize "CYBUS.Prod.DemandHint"}}</p>
+        </div>
+        <div class="cb-prod-slider">
+          <div class="cb-prod-slider-head">
+            <span class="cb-prod-stat-label"><i class="fas fa-anchor"></i> {{localize "CYBUS.Prod.BaseDemand"}}</span>
+            <span class="cb-prod-slider-val">{{p.baseDemand}}<em>/10</em></span>
+          </div>
+          <input type="range" class="cb-prod-range" min="0" max="10" value="{{p.baseDemand}}" data-edit="prod.{{p.id}}.baseDemand" {{#unless ../canEdit}}disabled{{/unless}}>
+          <p class="cb-prod-stat-hint">{{localize "CYBUS.Prod.BaseDemandHint"}}</p>
+        </div>
+        <div class="cb-demand-bar"><div style="width: {{p.demandPct}}%"></div></div>
+        {{#if p.projUnits}}
+        <p class="cb-prod-proj"><i class="fas fa-chart-line"></i> {{localize "CYBUS.ProjLine.units"}} <b>{{p.projUnits}}</b> · {{localize "CYBUS.ProjLine.revenue"}} <b>{{p.projRevenue}}</b></p>
+        {{/if}}
+        {{#if ../canEdit}}<p class="cb-prod-drop-hint"><i class="fas fa-image"></i> {{localize "CYBUS.Prod.DropItem"}}</p>{{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.Prod.None"}}</p></div>
+  {{/if}}
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.App.NoBusiness"}}</p></div>
+  {{/if}}
+</section>

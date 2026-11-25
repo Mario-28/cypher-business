@@ -1,0 +1,13 @@
+{{! ═══ panel note editor — toolbar + contenteditable + save/cancel ═══ }}
+<div class="cb-note-editor" data-cb-theme="{{theme}}">
+  <div class="cb-ne-toolbar">
+    <button type="button" class="cb-ne-fmt" data-action="fmtBold" title="Ctrl+B"><i class="fas fa-bold"></i></button>
+    <button type="button" class="cb-ne-fmt" data-action="fmtItalic" title="Ctrl+I"><i class="fas fa-italic"></i></button>
+    <button type="button" class="cb-ne-fmt" data-action="fmtList" title="{{localize "CYBUS.NoteEditor.ListHint"}}"><i class="fas fa-list-ul"></i></button>
+  </div>
+  <div class="cb-ne-editable" contenteditable="true" data-path="{{path}}">{{{html}}}</div>
+  <div class="cb-ne-foot">
+    <button type="button" class="cb-btn-primary" data-action="save"><i class="fas fa-check"></i> {{localize "CYBUS.NoteEditor.Save"}}</button>
+    <button type="button" class="cb-btn-ghost" data-action="cancel">{{localize "CYBUS.NoteEditor.Cancel"}}</button>
+  </div>
+</div>

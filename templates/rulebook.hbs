@@ -1,0 +1,248 @@
+{{! ═══ Cypher Business — the Manual (GM edition / Player Handbook) ═══ }}
+<div class="cb-manual" data-cb-theme="{{theme}}">
+  <div class="cb-man-toc">
+    {{#if isGM}}
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-what">What This Is</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-week">The Weekly Run</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-attrs">Attributes</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-money">Money</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-main">Main Tab</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-leadership">Leadership</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-personnel">Personnel</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-events">Events</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-rivals">Competition</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-facilities">Facilities</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-products">Products</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbm-managers">Managers &amp; Safety</button>
+    {{else}}
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-what">What You Own</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-see">What You Can See</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-push">What You Can Push</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-help">How To Actually Help</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-numbers">Reading The Numbers</button>
+    <button type="button" class="cb-man-toc-link" data-action="jumpTo" data-jump="#cbp-cant">What You Can't Touch</button>
+    {{/if}}
+  </div>
+
+  <div class="cb-man-body">
+    {{#if isGM}}
+    {{! ════════════════════════ GM EDITION ════════════════════════ }}
+    <h1 class="cb-man-title"><i class="fas fa-book-open"></i> The Business Manual — <em>GM Edition</em></h1>
+    <p class="cb-man-lede">Congratulations. The party has acquired a tavern / smuggling ring / trading house, and
+    you have acquired the job of being the economy. This manual is the complete rulebook: how the weekly engine
+    thinks, what every button does, and where the bodies are buried. Players get a different, thinner book —
+    keep this one behind the screen.</p>
+
+    <h2 class="cb-man-h" id="cbm-what">1 · What This Thing Is</h2>
+    <p>Cypher Business is a <strong>weekly business simulator</strong> that lives inside your Foundry world. One
+    business is a ledger with a pulse: six attributes, a payroll, rival houses, story events with deadlines, and a
+    treasury that remembers the last 104 weeks. You (the GM) are the only hand allowed to write in the ledger —
+    players look through the glass, and sometimes bang on it.</p>
+    <div class="cb-man-callout tip"><strong>Design philosophy.</strong> Numbers make suggestions; you make rulings.
+    The engine never rolls dice at the players and never decides a story outcome. It books the consequences after
+    <em>your</em> table decides.</div>
+
+    <h2 class="cb-man-h" id="cbm-week">2 · The Weekly Run, In Order</h2>
+    <p>When a week resolves (see <button type="button" class="cb-man-anchor" data-action="jumpTo" data-jump="#cbm-managers">who may press the button</button>),
+    the engine performs these phases exactly once, in this order:</p>
+    <table class="cb-man-table">
+      <tr><th>#</th><th>Phase</th><th>What happens</th></tr>
+      <tr><td>1</td><td>Expired events</td><td>Story events past their deadline fail automatically — their failure stakes apply and the ledger gets a line. Ignoring a problem is also a decision.</td></tr>
+      <tr><td>2</td><td>Spending</td><td>Payroll wages (base × wage band × finance discount), leadership wages, marketing (25/level), upkeep &amp; security (20/level). Marketing level 4+ also nudges the Marketing attribute +2 (levels 1–3 give +1).</td></tr>
+      <tr><td>3</td><td>Facilities</td><td>Each facility gains upkeep × 4 condition and loses a little to weekly wear. Crumbling shops demoralize the crew (see below).</td></tr>
+      <tr><td>3b</td><td>Facility mood</td><td>Housed crews drift ±1 per week toward (average condition ÷ 10). Overcrowded (crew &gt; total capacity)? Everyone loses an extra 1.</td></tr>
+      <tr><td>4</td><td>Wage morale</td><td>The pay band speaks: starvation (×0.6) and lean (×0.8) drain crew morale weekly and carry quit risk (30% / 12%) — the unhappiest worker walks first. Generous (×1.2) and lavish (×1.5) raise morale; lavish lifts the house's mood too.</td></tr>
+      <tr><td>5</td><td>Attribute drift</td><td>Leadership chases (2 + 2 × filled leadership roles). Personnel chases the crew's average productivity.</td></tr>
+      <tr><td>5b</td><td>People week</td><td>Every filled role and leading worker: morale chases the business (±2 dead zone); morale ≤3 erodes productivity, ≥8 grows it; loyalty drops when their morale drops; loyalty 0 = <strong>walkout</strong> (post vacates, house mood −1). Strength is always derived: round((P+M+L) ÷ 6).</td></tr>
+      <tr><td>6</td><td>Rivals</td><td>Each competitor attacks (aggression + die, softened by Security) vs. your defense (marketing + leadership + die). A beating can undercut a product's demand or steal your buzz; a rout (+5) raises Danger. Pressure builds toward a rival-move event.</td></tr>
+      <tr><td>7</td><td>Income</td><td>Every active product line sells (full formula in <button type="button" class="cb-man-anchor" data-action="jumpTo" data-jump="#cbm-money">Money</button>). Short-staffing throttles all lines proportionally. Demand drifts back toward its baseline. Morale ≥8 pays a +40 productivity bonus (and Profit +1); morale ≤2 costs 30 in slack (Profit −1).</td></tr>
+      <tr><td>8</td><td>Fresh event</td><td>Exactly one new story event lands in the pending pile, difficulty scaled to the size of the operation.</td></tr>
+      <tr><td>9</td><td>Danger &amp; debt</td><td>Danger wanders (soothed by Security). A negative treasury means collectors circling: Danger +1, Morale −1. Net &gt; +150 moves Profit +1; &lt; −150 moves it −1.</td></tr>
+      <tr><td>10</td><td>Ledger</td><td>The week's report is archived (104 weeks kept) and the chat card posts for everyone.</td></tr>
+    </table>
+
+    <h2 class="cb-man-h" id="cbm-attrs">3 · The Six Attributes (0–10)</h2>
+    <table class="cb-man-table">
+      <tr><th>Attribute</th><th>Drives</th><th>Moved by</th></tr>
+      <tr><td><strong>Profit</strong></td><td>Prestige; big weekly nets move it</td><td>Net &gt; +150 / &lt; −150; morale extremes</td></tr>
+      <tr><td><strong>Marketing</strong></td><td>Customer pull on every product line</td><td>Marketing spend; rivals stealing or losing ground</td></tr>
+      <tr><td><strong>Personnel</strong></td><td>Tracks your crew's average productivity</td><td>Drift toward the crew average; walkouts</td></tr>
+      <tr><td><strong>Leadership</strong></td><td>Tracks how many posts are filled</td><td>Drift toward 2 + 2 × filled roles</td></tr>
+      <tr><td><strong>Morale</strong></td><td>Wage bands, moods, bonuses at 8 / penalties at 2</td><td>Pay, facilities, roster mood, debt, passive drift toward 5</td></tr>
+      <tr><td><strong>Danger</strong></td><td>Suppresses sales (each point ≈ −3%)</td><td>Rival routs, debt, weekly wander; Security soothes</td></tr>
+    </table>
+    <div class="cb-man-callout warn"><strong>Steppers change reality.</strong> The −/+ steppers on the main tab are
+    direct GM edits — the engine doesn't ask why. Use them for table rulings and side-fiction; the numbers obey.</div>
+
+    <h2 class="cb-man-h" id="cbm-money">4 · Money, Honestly</h2>
+    <p>Each active product line, every week:</p>
+    <div class="cb-man-formula">units = demand × market × danger × staffing × facility × leadership × noise × 3 × price-appeal</div>
+    <ul class="cb-man-list">
+      <li><strong>market</strong> — 0.6 + Marketing ÷ 12 (+ up to 0.15 from marketing-domain roles)</li>
+      <li><strong>danger</strong> — 1 − Danger × 0.03 (max pain ≈ −30%)</li>
+      <li><strong>staffing</strong> — payroll heads ÷ heads-wanted, capped at 1. Understaff everything and every line slows by the same ratio</li>
+      <li><strong>facility</strong> — average condition ÷ 100 (no facilities = 0.5, the "back room" penalty)</li>
+      <li><strong>leadership</strong> — filled roles add ≈ ±0.5% per productivity point away from 5; leading workers add +0.5–1%</li>
+      <li><strong>noise</strong> — weekly luck, roughly ×0.7–1.3</li>
+      <li><strong>price-appeal</strong> — cheap moves volume, dear moves margin: max(0.15, 1 − value ÷ 110). A luxury line never fully dies, it just whispers.</li>
+    </ul>
+    <p>Then: <strong>revenue = units × value × quality</strong>, where quality = 1 + (average productivity − 5) ÷ 20 — a motivated crew quietly charges more.</p>
+    <div class="cb-man-callout tip"><strong>The projection panel</strong> on the main tab runs this same math with average
+    luck — it is the honest baseline, not a promise. Events and rival moves are the weather.</div>
+
+    <h2 class="cb-man-h" id="cbm-main">5 · Main Tab Controls</h2>
+    <ul class="cb-man-list">
+      <li><strong>−/+ steppers</strong> — direct attribute edits (GM).</li>
+      <li><strong>Spend sliders</strong> — marketing / upkeep &amp; security levels (0–5), and the <strong>wage band</strong> (starvation → lavish). All expenses scale with the finance-domain discount.</li>
+      <li><strong>Ledger pair</strong> — expected expenses and net profit for the coming week, live.</li>
+      <li><strong>Week Preview / Trends</strong> — pop-out reports anyone may open; the radar and history charts react to the window size.</li>
+      <li><strong>Add banner</strong> — a business logo/backdrop behind the header. <strong>Clear banner</strong> removes it.</li>
+      <li><strong>Run Week</strong> — resolves one week (see the handshake in <button type="button" class="cb-man-anchor" data-action="jumpTo" data-jump="#cbm-managers">Managers</button>). <strong>Run All Weeks</strong> (GM) sweeps every business.</li>
+      <li><strong>Calendar icon</strong> — opens Calendaria (if installed) — the run also advances the world date 7 days.</li>
+      <li><strong>Export / Import</strong> — the whole ledger as JSON. Export before experiments. Future-you will be grateful.</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbm-leadership">6 · Leadership</h2>
+    <p><strong>Drag an NPC actor onto a role card</strong> (or a leading-worker slot) to fill the post. PCs can be dropped,
+    but their cards read-only — heroes don't take minutes. Each post has <strong>Productivity / Morale / Loyalty</strong>
+    (0–10, GM-editable) and derived <strong>Strength</strong> (0–5). Pay each post a weekly <strong>wage</strong>; unfilled posts cost nothing.</p>
+    <table class="cb-man-table">
+      <tr><th>Domain</th><th>Engine effect</th></tr>
+      <tr><td><strong>Marketing</strong></td><td>Up to +15% customer pull (0.05 per domain power).</td></tr>
+      <tr><td><strong>Finance</strong></td><td>Up to −20% on all spending (0.08 per domain power).</td></tr>
+      <tr><td><strong>Security</strong></td><td>Softer rival attacks (up to −2), calms the weekly Danger wander (up to −1).</td></tr>
+      <tr><td><strong>Leadership</strong></td><td>Honorary today: income bonus counts the person, not the domain. Engine hook reserved.</td></tr>
+      <tr><td><strong>Operations</strong></td><td>Honorary today: collected but not yet consumed. Assign it for the fiction.</td></tr>
+    </table>
+    <p><strong>Leading workers</strong> count at half weight toward their domain and add +0.5–1% income each. The hover
+    <strong>ⓘ</strong> tooltip on any card explains itself; the sticky-note icon opens a rich-text note; the ♀/♂ badge
+    cycles presentation. Loyalty 0 walks out — morale damage to the house included.</p>
+
+    <h2 class="cb-man-h" id="cbm-personnel">7 · Personnel</h2>
+    <ul class="cb-man-list">
+      <li><strong>Hire +1 / +5</strong> — recruits arrive with rolled names, ages, backgrounds and three traits. Hover the badge on a worker's row for the persona card.</li>
+      <li><strong>Wage per worker</strong> — base shins per week; the wage band multiplies it.</li>
+      <li><strong>Morale &amp; productivity</strong> — shaped weekly by pay, housing and the mood of the house. Effectiveness = (productivity + morale) ÷ 2.</li>
+      <li><strong>Fire</strong> — immediate. No severance package; this is the Ninth World.</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbm-events">8 · Events (the Heart of It)</h2>
+    <p>One event per week lands in <strong>Pending</strong>, drawn from a large categorized table (global, business,
+    leadership, personnel, competition, facility, product, crisis). Every event has a <strong>difficulty 1–10 → DC 3–30</strong>
+    and <strong>three named solutions</strong>, each with its own steps, stakes and consequences.</p>
+    <ul class="cb-man-list">
+      <li><strong>+ Step</strong> — log table progress per solution as scenes play out. Declare Success unlocks only when every required step is logged.</li>
+      <li><strong>Declare Success / Failure</strong> — your ruling, applied instantly, announced to chat. Failure stakes scale with difficulty.</li>
+      <li><strong>Link Roll</strong> — arm a solution; the <em>next chat roll</em> (anyone's — the player's own sheet roll is the intended one) resolves it: total vs DC. The link expires quietly if nobody rolls.</li>
+      <li><strong>Force Event</strong> (dice) — spawn an event right now instead of waiting for the weekly beat.</li>
+      <li><strong>Expiry</strong> — when the due week passes, failure applies automatically. The pending strip and the canvas medallion badge count what's waiting.</li>
+      <li><strong>Journal</strong> — every declared outcome is archived with its stakes; clear it if the past gets heavy.</li>
+    </ul>
+    <div class="cb-man-callout gm"><strong>Players see</strong> the event's title, description, difficulty and deadline —
+    never the solution stakes or your buttons. Narrate the stakes aloud, or don't.</div>
+
+    <h2 class="cb-man-h" id="cbm-rivals">9 · Competition</h2>
+    <p>Rivals have <strong>Strength</strong> and <strong>Aggression</strong> gauges and a <strong>pressure</strong> meter.
+    Each week attack (aggression + die, softened by Security) meets defense (marketing + leadership + die): a clear rival
+    win undercuts a random product's demand or steals marketing buzz; a clear win for you gains buzz; a rout (+5) raises
+    Danger. Pressure moves with results — at <strong>max (10)</strong> the rival makes an aggressive move and a special
+    rival event spawns, then pressure resets to 4.</p>
+    <ul class="cb-man-list">
+      <li><strong>Dice button</strong> — roll a ready-made rival (name, M.O., description, key figures included).</li>
+      <li><strong>Rewrite</strong> — regenerate the house description from its M.O. and temperament.</li>
+      <li><strong>Key figures</strong> — named NPCs with roles (The Money, The Face…); reroll individually; the roster collapses behind its chevron.</li>
+      <li><strong>House intel</strong> — the two-column dossier (services / holdings) players may also open.</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbm-facilities">10 · Facilities</h2>
+    <ul class="cb-man-list">
+      <li><strong>Condition</strong> (0–100) powers the weekly mood of housed crews; <strong>capacity</strong> is how many beds. More crew than beds = overcrowding morale hit.</li>
+      <li><strong>Renovate</strong> — instant +15 condition for max(25, capacity × 8) shins. Button shows the price.</li>
+      <li><strong>Drop a Scene</strong> on the card for a hero image and a <strong>Visit</strong> button (everyone can hop to the scene). Detach with the ×.</li>
+      <li>Upkeep spending repairs (level × 4 per week) but weekly wear is a fact of life.</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbm-products">11 · Products</h2>
+    <p>Each line has exactly four meaningful dials:</p>
+    <ul class="cb-man-list">
+      <li><strong>Value</strong> (0–100) — per-unit profit. Cheap = volume, dear = margin (see Money).</li>
+      <li><strong>Demand</strong> (0–10) — this week's market pull; drifts ±1 toward base demand each week.</li>
+      <li><strong>Base demand</strong> (0–10) — the anchor the market relaxes toward. Rivals undercutting you move the pull, not the anchor.</li>
+      <li><strong>Workers demand</strong> (0–10) — how many payroll heads the line needs. All active lines' needs sum into the staffing ratio.</li>
+    </ul>
+    <p>The <strong>active</strong> switch pulls a line off the floor (no sales, no staffing need, demand frozen). Drag an
+    <strong>Item</strong> onto the card to link the ledger to a real sheet — the name and art follow; click the tag to open it.</p>
+
+    <h2 class="cb-man-h" id="cbm-managers">12 · Managers, the Run-Week Handshake &amp; Safety</h2>
+    <ul class="cb-man-list">
+      <li><strong>Anyone may open the window</strong> and look. Only the GM edits.</li>
+      <li><strong>Managers</strong> (GM sets per business, via the managers button in the header) may <em>request</em> a week: their Run Week click emits a request; the GM gets a confirm dialog; on approve the week runs with their name on the card. Two GMs clicking at once is race-protected.</li>
+      <li><strong>Calendaria</strong> (optional module) supplies in-world week labels and the date advances 7 days per run; without it, weeks are simply numbered.</li>
+      <li><strong>Themes</strong> are per-user — six skins, no table argument required.</li>
+      <li><strong>State</strong> lives in one world setting, migrated forward on load. Export before surgery; import to restore. The packager ships no dev files.</li>
+    </ul>
+    <div class="cb-man-callout warn"><strong>The golden rule of ledger-keeping:</strong> never run a week to "test
+    something" in a live world without exporting first. The engine forgives; the treasury doesn't.</div>
+
+    {{else}}
+    {{! ════════════════════════ PLAYER HANDBOOK ════════════════════════ }}
+    <h1 class="cb-man-title"><i class="fas fa-book-open"></i> The Player's Handbook — <em>So You Own a Business Now</em></h1>
+    <p class="cb-man-lede">Congratulations are customary. Condolences are more honest. Somewhere between the dragon
+    hoard and the tavern deed, the party became management — and this is the book they hand you at the door. Read it;
+    the payroll thanks you.</p>
+
+    <h2 class="cb-man-h" id="cbp-what">1 · What You Own</h2>
+    <p>Your business is a living ledger: six attributes on the radar (Profit, Marketing, Personnel, Leadership, Morale,
+    Danger), a treasury, a crew with names and grudges, rival houses, product lines, and a pile of <strong>open events</strong>
+    — problems with deadlines. Every in-game week, one button resolves it all: wages, sales, wear, rivals, and one fresh
+    problem. The GM keeps the pen. You keep the business alive.</p>
+
+    <h2 class="cb-man-h" id="cbp-see">2 · What You Can See</h2>
+    <ul class="cb-man-list">
+      <li><strong>Main tab</strong> — the radar, attribute cards, next week's expected ledger (expenses &amp; net), profit history, and the <strong>open events strip</strong> at the bottom. If that strip has chips in it, the house has deadlines.</li>
+      <li><strong>Leadership</strong> — who holds which post, their portraits, morale, loyalty. If someone's loyalty is circling the drain, maybe have a talk before the talk has them.</li>
+      <li><strong>Personnel</strong> — every hire's persona card (hover the badge). Learn their names; the ledger did.</li>
+      <li><strong>Events</strong> — the title, the story, the difficulty and the deadline. What you <em>don't</em> see are the solution stakes — ask around the table.</li>
+      <li><strong>Competition</strong> — rival dossiers, including the two-column house intel. Know your enemy's M.O.</li>
+      <li><strong>Facilities &amp; Products</strong> — condition, capacity, demand, and any item sheets the GM linked (click the tag to open the actual item).</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbp-push">3 · What You Can Push (Legally)</h2>
+    <ul class="cb-man-list">
+      <li><strong>Run Week</strong> — if the GM named you a <em>manager</em>, your click asks the GM to resolve the week. It is a request, not a trigger; the GM confirms. Do not hammer it.</li>
+      <li><strong>Week Preview / Trends</strong> — pop-out reports on the coming ledger and the last seasons of history; toggle the series you care about.</li>
+      <li><strong>Visit</strong> on a facility — jump straight to its scene.</li>
+      <li><strong>Rival dossiers</strong> — expand/collapse key figures and house intel. Reading is free.</li>
+      <li><strong>The business dropdown</strong> (if your world runs several houses) and the <strong>theme dropdown</strong> — your theme choice is yours alone; nobody else's screen changes.</li>
+      <li><strong>The brass medallion</strong> floating on the canvas opens the same window; its badge counts unresolved events. It is not decoration. It is a to-do list.</li>
+    </ul>
+
+    <h2 class="cb-man-h" id="cbp-help">4 · How To Actually Help</h2>
+    <ol class="cb-man-list">
+      <li><strong>Read the event out loud.</strong> The GM sees three possible approaches with stakes; you see the situation. Propose a plan — "we bribe the inspector" is a solution, "we hide in the cellar" is also a solution.</li>
+      <li><strong>Roll it yourself.</strong> Ask the GM to <em>Link Roll</em> your chosen solution, then make the skill roll from your own character sheet in chat. Your total vs the event's DC decides, and the ledger updates from <em>your</em> dice. Trained (+3) and specialized (+6) skills matter; inabilities (−3) are how cautionary tales happen.</li>
+      <li><strong>Watch the staffing line.</strong> "The lines want 6 workers, the payroll has 4 — everything runs at 67%." Hire. Or accept being slow, but decide knowingly.</li>
+      <li><strong>Nag about wages when morale sags.</strong> The wage slider is the GM's, but the grumbling crew is yours to hear. Starvation wages are how you lose your best people mid-arc.</li>
+      <li><strong>Take deadlines seriously.</strong> An expired event fails by itself, with the failure version of the stakes. The strip counts weeks. Ignoring a problem is also a decision — the manual checked: it's on page 1 of the GM's book.</li>
+      <li><strong>Lean on your specialists.</strong> High-Might pools for enforcement, intellect for ledgers, speed for smuggling runs. The business is a group project with a cash register.</li>
+    </ol>
+
+    <h2 class="cb-man-h" id="cbp-numbers">5 · Reading The Numbers</h2>
+    <table class="cb-man-table">
+      <tr><th>You see</th><th>It means</th></tr>
+      <tr><td>Staffing %</td><td>Payroll ÷ workers-wanted. 100% = every line fully crewed; less throttles all sales proportionally.</td></tr>
+      <tr><td>Projection lines</td><td>The honest baseline for next week — wages, upkeep, expected sales. Luck and events are the weather.</td></tr>
+      <tr><td>Radar spikes</td><td>Danger up = sales suppressed and collectors emboldened. Morale up = bonuses and loyalty. Personnel and Leadership chase your crew and your filled posts.</td></tr>
+      <tr><td>Demand vs base demand</td><td>This week's pull vs the market's resting appetite. Rivals undercut the pull; it drifts back over weeks.</td></tr>
+      <tr><td>Condition &amp; capacity</td><td>Happy crews live in maintained buildings with enough beds. Shifts and mold are a lifestyle, not a stat.</td></tr>
+    </table>
+
+    <h2 class="cb-man-h" id="cbp-cant">6 · What You Can't Touch (And Why That's Fine)</h2>
+    <p>Every edit — attributes, hires, wages, renovations, rival fates, event outcomes — belongs to the GM. One ledger,
+    one truth, no "but I thought we had more money" arguments. Your power is information and persuasion: read the books,
+    make the plan, roll the dice. The engine records what the table decides; it never decides for you.</p>
+    <div class="cb-man-callout tip"><strong>House rule zero:</strong> if a number looks wrong, say so. The GM can adjust
+    anything with a stepper — and now you'll both know which one.</div>
+    {{/if}}
+  </div>
+</div>

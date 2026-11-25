@@ -1,0 +1,48 @@
+<section class="cb-report">
+  {{#if isWeek}}
+  {{#with projection}}
+  <div class="cb-rp-ledger">
+    {{#each lines as |l|}}
+    <div class="cb-rp-line {{l.kind}}">
+      <span class="cb-rp-label">{{l.label}}</span>
+      <span class="cb-rp-amount">{{l.amount}}</span>
+    </div>
+    {{/each}}
+    {{#unless lines.length}}<p class="cb-hint">{{localize "CYBUS.Report.NoLines"}}</p>{{/unless}}
+    <div class="cb-rp-totals">
+      <div><span>{{localize "CYBUS.Report.Ser.income"}}</span><b class="pos">{{income}}</b></div>
+      <div><span>{{localize "CYBUS.Report.Ser.expenses"}}</span><b class="neg">-{{expenses}}</b></div>
+      <div class="cb-rp-net {{#if (lt net 0)}}neg{{/if}}"><span>{{localize "CYBUS.Report.Ser.net"}}</span><b>{{net}}</b></div>
+      <div class="cb-rp-cash"><span>{{localize "CYBUS.Report.CashAfter"}}</span><b>{{cashAfter}}</b></div>
+    </div>
+  </div>
+  {{#if products.length}}
+  <h4 class="cb-rp-sub"><i class="fas fa-box"></i> {{localize "CYBUS.Report.ByProduct"}}</h4>
+  <div class="cb-rp-products">
+    {{#each products as |p|}}
+    <div class="cb-rp-prod">
+      <span class="cb-rp-pname">{{p.name}}</span>
+      <span class="cb-rp-pmeta">~{{p.units}} {{localize "CYBUS.Report.Units"}} · {{p.revenue}} − {{p.cost}}</span>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+  <p class="cb-hint cb-rp-note"><i class="fas fa-dice"></i> {{localize "CYBUS.Report.ForecastNote"}}</p>
+  {{/with}}
+  {{/if}}
+
+  {{#if isTrends}}
+  <div class="cb-rp-legend">
+    {{#each series as |s|}}
+    <button type="button"
+            class="cb-trend-chip {{#if s.active}}active{{/if}}"
+            data-action="toggleSeries"
+            data-series="{{s.key}}"
+            style="--chip: {{s.color}}">
+      <i class="fas fa-circle"></i> {{s.label}}
+    </button>
+    {{/each}}
+  </div>
+  <canvas id="cb-trends" class="cb-canvas cb-trends"></canvas>
+  {{/if}}
+</section>

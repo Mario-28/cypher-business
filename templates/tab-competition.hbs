@@ -1,0 +1,148 @@
+<section class="cb-tab" data-tab="competition">
+  {{#if business}}
+  <div class="cb-section-head">
+    <p class="cb-hint"><i class="fas fa-chess-knight"></i> {{localize "CYBUS.Comp.Hint"}}</p>
+    {{#if canEdit}}
+    <div class="cb-head-btns">
+      <button type="button" class="cb-btn-ghost" data-action="rollCompetitor"><i class="fas fa-dice"></i> {{localize "CYBUS.Comp.Random"}}</button>
+      <button type="button" class="cb-btn-ghost" data-action="addCompetitor"><i class="fas fa-plus"></i> {{localize "CYBUS.Comp.Add"}}</button>
+    </div>
+    {{/if}}
+  </div>
+  {{#if competitors.length}}
+  <div class="cb-comp-grid">
+    {{#each competitors as |c|}}
+    <div class="cb-comp-card" style="--comp-accent: {{c.accent}}">
+      <div class="cb-comp-head">
+        <span class="cb-comp-seal">{{c.initial}}</span>
+        {{#if ../canEdit}}
+        <input class="cb-comp-name" type="text" value="{{c.name}}" data-edit="comp.{{c.id}}.name">
+        {{else}}
+        <span class="cb-comp-name">{{c.name}}</span>
+        {{/if}}
+        {{#if ../canEdit}}<button type="button" class="cb-btn-mini danger" data-action="removeCompetitor" data-comp-id="{{c.id}}"><i class="fas fa-trash"></i></button>{{/if}}
+      </div>
+      <div class="cb-comp-mo">
+        {{#if ../canEdit}}
+        <input class="cb-comp-mo-input" type="text" value="{{c.focus}}" data-edit="comp.{{c.id}}.focus" title="{{localize "CYBUS.Comp.FocusHint"}}">
+        {{else}}
+        <span class="cb-comp-mo-pill">{{c.focus}}</span>
+        {{/if}}
+      </div>
+      <div class="cb-comp-desc">
+        {{#if ../canEdit}}
+        <div class="cb-comp-desc-head">
+          <span class="cb-comp-desc-label">{{localize "CYBUS.Comp.Description"}}</span>
+          <button type="button" class="cb-btn-mini ghost" data-action="genCompDesc" data-comp-id="{{c.id}}" title="{{localize "CYBUS.Comp.GenDescHint"}}"><i class="fas fa-dice"></i> {{localize "CYBUS.Comp.GenDesc"}}</button>
+        </div>
+        <textarea class="cb-comp-desc-input" rows="3" data-edit="comp.{{c.id}}.description" placeholder="{{localize "CYBUS.Comp.DescPlaceholder"}}">{{c.description}}</textarea>
+        {{else}}
+        <p class="cb-comp-desc-text">{{c.description}}</p>
+        {{/if}}
+      </div>
+      <div class="cb-comp-stats">
+        <div class="cb-comp-stat">
+          <label>{{localize "CYBUS.Comp.Strength"}}</label>
+          <div class="cb-comp-stat-row">
+            <input type="range" min="0" max="10" value="{{c.strength}}" data-edit="comp.{{c.id}}.strength" {{#unless ../canEdit}}disabled{{/unless}}>
+            <span class="cb-comp-stat-val">{{c.strength}}</span>
+          </div>
+        </div>
+        <div class="cb-comp-stat">
+          <label>{{localize "CYBUS.Comp.Aggression"}}</label>
+          <div class="cb-comp-stat-row">
+            <input type="range" min="0" max="10" value="{{c.aggression}}" data-edit="comp.{{c.id}}.aggression" {{#unless ../canEdit}}disabled{{/unless}}>
+            <span class="cb-comp-stat-val">{{c.aggression}}</span>
+          </div>
+        </div>
+        <div class="cb-comp-stat">
+          <label>{{localize "CYBUS.Comp.Pressure"}} <i class="fas fa-circle-info cb-comp-press-info"></i></label>
+          <div class="cb-comp-stat-row">
+            <div class="cb-comp-press-track" title="{{localize "CYBUS.Comp.PressureHint"}}">
+              <div class="cb-comp-press-fill {{c.pressClass}}" style="width: {{c.pressPct}}%"></div>
+            </div>
+            <span class="cb-comp-stat-val">{{c.pressure}}</span>
+          </div>
+        </div>
+      </div>
+      <div class="cb-comp-intel">
+        <button type="button" class="cb-comp-intel-head{{#if c.intelOpen}} open{{/if}}" data-action="toggleCompIntel" data-comp-id="{{c.id}}" title="{{localize "CYBUS.Comp.IntelToggle"}}">
+          <i class="fas fa-file-lines"></i> {{localize "CYBUS.Comp.Intel"}}
+          <i class="fas fa-chevron-down cb-comp-intel-chev"></i>
+        </button>
+        {{#if c.intelOpen}}
+        <div class="cb-comp-intel-grid">
+          <div class="cb-comp-intel-cell">
+            <label>{{localize "CYBUS.Comp.MOFull"}}</label>
+            <p class="cb-comp-intel-text cb-comp-intel-mo">{{c.focus}}</p>
+            <label>{{localize "CYBUS.Comp.Services"}}</label>
+            {{#if ../canEdit}}
+            <p class="cb-comp-intel-text cb-comp-intel-editable" data-comp-id="{{c.id}}" data-comp-field="services" title="{{localize "CYBUS.Comp.IntelEditHint"}}">{{c.services}}</p>
+            {{else}}
+            <p class="cb-comp-intel-text">{{c.services}}</p>
+            {{/if}}
+          </div>
+          <div class="cb-comp-intel-cell">
+            <label>{{localize "CYBUS.Comp.RivalFac"}}</label>
+            {{#if ../canEdit}}
+            <p class="cb-comp-intel-text cb-comp-intel-editable" data-comp-id="{{c.id}}" data-comp-field="facilities" title="{{localize "CYBUS.Comp.IntelEditHint"}}">{{c.facilities}}</p>
+            {{else}}
+            <p class="cb-comp-intel-text">{{c.facilities}}</p>
+            {{/if}}
+          </div>
+        </div>
+        {{/if}}
+      </div>
+      <div class="cb-comp-figures">
+        <button type="button" class="cb-comp-figs-head{{#if c.figsOpen}} open{{/if}}" data-action="toggleCompFigs" data-comp-id="{{c.id}}" title="{{localize "CYBUS.Comp.FigsToggle"}}">
+          <i class="fas fa-masks"></i> {{localize "CYBUS.Comp.KeyFigures"}} <span class="cb-comp-fig-count">{{c.npcs.length}}</span>
+          <i class="fas fa-chevron-down cb-comp-figs-chev"></i>
+        </button>
+        {{#if c.figsOpen}}
+        {{#each c.npcs as |n|}}
+        <div class="cb-comp-fig" style="--fig-accent: hsl({{n.figHue}} 45% 55%)">
+          <span class="cb-comp-fig-seal">{{n.initial}}</span>
+          <div class="cb-comp-fig-body">
+            <div class="cb-comp-fig-head">
+              {{#if ../../canEdit}}
+              <input class="cb-comp-fig-name" type="text" value="{{n.name}}" data-edit="fig.{{n.id}}.name">
+              {{else}}
+              <span class="cb-comp-fig-name">{{n.name}}</span>
+              {{/if}}
+              {{#if ../../canEdit}}
+              <input class="cb-comp-fig-title" type="text" value="{{n.title}}" data-edit="fig.{{n.id}}.title" title="{{localize "CYBUS.Comp.FigureTitleHint"}}">
+              {{else}}
+              <span class="cb-comp-fig-title">{{n.title}}</span>
+              {{/if}}
+            </div>
+            <p class="cb-comp-fig-desc">{{n.description}}</p>
+            {{#if ../../canEdit}}
+            <input class="cb-comp-fig-note" type="text" value="{{n.note}}" data-edit="fig.{{n.id}}.note" placeholder="{{localize "CYBUS.Comp.FigureNotePh"}}">
+            <div class="cb-comp-fig-btns">
+              <button type="button" class="cb-btn-mini" data-action="rerollCompFigure" data-comp-id="{{n.compId}}" data-fig-id="{{n.id}}" title="{{localize "CYBUS.Comp.RerollFigureHint"}}"><i class="fas fa-dice"></i></button>
+              <button type="button" class="cb-btn-mini danger" data-action="removeCompFigure" data-comp-id="{{n.compId}}" data-fig-id="{{n.id}}"><i class="fas fa-trash"></i></button>
+            </div>
+            {{/if}}
+          </div>
+        </div>
+        {{/each}}
+        {{/if}}
+        {{#if ../canEdit}}
+        <button type="button" class="cb-comp-fig-add" data-action="addCompFigure" data-comp-id="{{c.id}}"><i class="fas fa-plus"></i> {{localize "CYBUS.Comp.AddFigure"}}</button>
+        {{/if}}
+      </div>
+      {{#if ../canEdit}}
+      <label class="cb-comp-note-label">{{localize "CYBUS.Comp.Note"}}
+        <input type="text" value="{{c.note}}" data-edit="comp.{{c.id}}.note">
+      </label>
+      {{/if}}
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.Comp.None"}}</p></div>
+  {{/if}}
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.App.NoBusiness"}}</p></div>
+  {{/if}}
+</section>

@@ -1,0 +1,77 @@
+<section class="cb-tab" data-tab="facility">
+  {{#if business}}
+  <div class="cb-section-head">
+    <p class="cb-hint"><i class="fas fa-warehouse"></i> {{localize "CYBUS.Fac.Hint"}}</p>
+    {{#if canEdit}}<button type="button" class="cb-btn-ghost" data-action="addFacility"><i class="fas fa-plus"></i> {{localize "CYBUS.Fac.Add"}}</button>{{/if}}
+  </div>
+  {{#if facilities.length}}
+  <div class="cb-fac-grid">
+    {{#each facilities as |f|}}
+    <div class="cb-fac-card{{#unless f.hasScene}} no-img{{/unless}}" data-fac-id="{{f.id}}">
+      <div class="cb-fac-hero" {{#if f.hasScene}}style="background-image: url('{{f.img}}')"{{/if}}>
+        <div class="cb-fac-hero-shade"></div>
+        {{#if ../canEdit}}
+        {{#if f.hasScene}}
+        <button type="button" class="cb-fac-unscene" data-action="clearFacilityScene" data-fac-id="{{f.id}}" title="{{localize "CYBUS.Fac.ClearScene"}}"><i class="fas fa-xmark"></i></button>
+        {{/if}}
+        {{/if}}
+        <div class="cb-fac-hero-bottom">
+          <div class="cb-fac-titleplate">
+            {{#if ../canEdit}}
+            <input class="cb-fac-name" type="text" value="{{f.name}}" data-edit="fac.{{f.id}}.name">
+            {{else}}
+            <span class="cb-fac-name">{{f.name}}</span>
+            {{/if}}
+            {{#if f.hasScene}}<span class="cb-fac-scene-tag"><i class="fas fa-map"></i> {{f.sceneName}}</span>{{/if}}
+          </div>
+          <div class="cb-fac-hero-tools">
+            {{#if f.hasScene}}
+            <button type="button" class="cb-fac-visit" data-action="visitFacility" data-fac-id="{{f.id}}" title="{{#if ../canEdit}}{{localize "CYBUS.Fac.VisitHint"}}{{else}}{{localize "CYBUS.Fac.Visit"}}{{/if}}">
+              <i class="fas fa-map-location-dot"></i> {{localize "CYBUS.Fac.Visit"}}
+            </button>
+            {{/if}}
+            {{#if ../canEdit}}<button type="button" class="cb-btn-mini danger" data-action="removeFacility" data-fac-id="{{f.id}}"><i class="fas fa-trash"></i></button>{{/if}}
+          </div>
+        </div>
+      </div>
+      <div class="cb-fac-body">
+        <div class="cb-fac-stat">
+          <div class="cb-fac-stat-head">
+            <span class="cb-fac-stat-label"><i class="fas fa-hammer"></i> {{localize "CYBUS.Fac.Condition"}}</span>
+            <span class="cb-fac-cond-val">{{f.condition}}%</span>
+          </div>
+          <div class="cb-fac-gauge"><div class="cb-fac-gauge-fill{{#if (lt f.condition 35)}} low{{/if}}" style="width: {{f.condition}}%"></div></div>
+          <p class="cb-fac-stat-hint">{{localize "CYBUS.Fac.ConditionHint"}}</p>
+          {{#if ../canEdit}}
+          <input type="range" class="cb-fac-range" min="0" max="100" value="{{f.condition}}" data-edit="fac.{{f.id}}.condition">
+          <button type="button" class="cb-btn-ghost cb-fac-reno" data-action="renovateFacility" data-fac-id="{{f.id}}" title="{{f.renoTitle}}" {{#if f.renoDisabled}}disabled{{/if}}><i class="fas fa-screwdriver-wrench"></i> {{localize "CYBUS.Fac.Renovate"}}</button>
+          {{/if}}
+        </div>
+        <div class="cb-fac-stat">
+          <div class="cb-fac-stat-head">
+            <span class="cb-fac-stat-label"><i class="fas fa-users"></i> {{localize "CYBUS.Fac.Capacity"}}</span>
+            {{#if ../canEdit}}
+            <input class="cb-num cb-fac-cap-input" type="number" min="0" value="{{f.capacity}}" data-edit="fac.{{f.id}}.capacity">
+            {{else}}
+            <span class="cb-fac-cap-val">{{f.capacity}}</span>
+            {{/if}}
+          </div>
+          <p class="cb-fac-stat-hint">{{localize "CYBUS.Fac.CapacityHint"}}</p>
+        </div>
+        <div class="cb-fac-note-row">
+          <label>{{localize "CYBUS.Fac.Note"}}
+            <input type="text" value="{{f.note}}" data-edit="fac.{{f.id}}.note" {{#unless ../canEdit}}disabled{{/unless}}>
+          </label>
+        </div>
+        {{#if ../canEdit}}<p class="cb-fac-drop-hint"><i class="fas fa-image"></i> {{localize "CYBUS.Fac.DropScene"}}</p>{{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.Fac.None"}}</p></div>
+  {{/if}}
+  {{else}}
+  <div class="cb-empty"><p>{{localize "CYBUS.App.NoBusiness"}}</p></div>
+  {{/if}}
+</section>

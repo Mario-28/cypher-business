@@ -1,0 +1,171 @@
+<section class="cb-tab" data-tab="main">
+  {{#if business}}
+  <div class="cb-hero {{#if business.banner}}has-banner{{/if}}">
+    {{#if business.banner}}
+    <div class="cb-hero-bg"><img src="{{business.banner}}" alt=""></div>
+    {{/if}}
+    {{#if business.banner}}{{#if canEdit}}
+    <div class="cb-banner-tools">
+      <button type="button" data-action="uploadBanner" title="{{localize "CYBUS.Main.ChangeBanner"}}"><i class="fas fa-image"></i></button>
+      <button type="button" data-action="clearBanner" title="{{localize "CYBUS.Main.RemoveBanner"}}"><i class="fas fa-xmark"></i></button>
+    </div>
+    {{/if}}{{/if}}
+    <div class="cb-main-head">
+      <div class="cb-id-block">
+        {{#unless business.banner}}{{#if canEdit}}
+        <button type="button" class="cb-banner-add" data-action="uploadBanner"><i class="fas fa-image"></i> {{localize "CYBUS.Main.AddBanner"}}</button>
+        {{/if}}{{/unless}}
+        <input class="cb-biz-name" type="text" value="{{business.name}}" data-edit="business.name" {{#unless canEdit}}disabled{{/unless}} placeholder="{{localize "CYBUS.App.BusinessName"}}">
+      <textarea class="cb-desc" data-edit="business.description" {{#unless canEdit}}disabled{{/unless}} placeholder="{{localize "CYBUS.App.Description"}}">{{business.description}}</textarea>
+    </div>
+
+    {{! Command column — Art Deco ledger tally-card: fixed width, one row per
+        fact, label left / value right, actions pinned to the foot. }}
+    <div class="cb-head-actions">
+      <div class="cb-ha-card">
+        <div class="cb-ha-row">
+          <span class="cb-ha-label"><i class="fas fa-coins"></i> {{localize "CYBUS.Main.Cash"}}</span>
+          <input class="cb-ha-cash" type="number" value="{{business.treasury.cash}}" data-edit="business.cash" {{#unless canEdit}}disabled{{/unless}}>
+        </div>
+        <div class="cb-ha-row cb-ha-weekrow">
+          <span class="cb-ha-label"><i class="fas fa-calendar-week"></i> {{localize "CYBUS.Main.Week"}} {{business.week.index}}</span>
+          {{#if business.week.lastLabel}}<span class="cb-ha-meta">{{business.week.lastLabel}}</span>{{/if}}
+          <span class="cb-ha-meta">{{localize "CYBUS.Main.Next"}}: {{nextWeekLabel}}</span>
+        </div>
+        {{#if calendaria.active}}
+        <div class="cb-ha-row">
+          <span class="cb-ha-label cb-ha-dim"><i class="fas fa-calendar-days"></i> {{calendaria.dateLabel}}</span>
+          <button type="button" class="cb-ha-link" data-action="openCal" title="{{localize "CYBUS.Main.OpenCalendaria"}}"><i class="fas fa-up-right-from-square"></i></button>
+        </div>
+        {{/if}}
+        {{#if canEdit}}
+        <div class="cb-ha-run">
+          <button type="button" class="cb-btn-primary" data-action="runWeek"><i class="fas fa-forward-step"></i> {{localize "CYBUS.Main.RunWeek"}}</button>
+          {{#if isGM}}
+          <button type="button" class="cb-btn-ghost cb-ha-all" data-action="runAllWeeks" title="{{localize "CYBUS.Main.RunAllHint"}}"><i class="fas fa-fast-forward"></i></button>
+          {{/if}}
+        </div>
+        {{/if}}
+        <div class="cb-ha-reports">
+          <button type="button" class="cb-btn-ghost" data-action="weekPreview" title="{{localize "CYBUS.Main.PreviewHint"}}"><i class="fas fa-calculator"></i> {{localize "CYBUS.Main.WeekPreview"}}</button>
+          <button type="button" class="cb-btn-ghost" data-action="trends" title="{{localize "CYBUS.Main.TrendsHint"}}"><i class="fas fa-chart-line"></i> {{localize "CYBUS.Main.Trends"}}</button>
+        </div>
+        {{#if isGM}}
+        <div class="cb-ha-admin">
+          <button type="button" class="cb-btn-ghost" data-action="manageManagers" title="{{localize "CYBUS.App.ManagersHint"}}"><i class="fas fa-user-lock"></i> {{localize "CYBUS.App.Managers"}}</button>
+          {{#if canEdit}}
+          <button type="button" class="cb-btn-ghost" data-action="exportState" title="{{localize "CYBUS.Data.ExportHint"}}"><i class="fas fa-file-export"></i></button>
+          <button type="button" class="cb-btn-ghost" data-action="importState" title="{{localize "CYBUS.Data.ImportHint"}}"><i class="fas fa-file-import"></i></button>
+          {{/if}}
+          <button type="button" class="cb-btn-ghost cb-danger" data-action="deleteBusiness"><i class="fas fa-trash"></i> {{localize "CYBUS.App.Delete"}}</button>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    </div>
+
+    <div class="cb-attr-row">
+      {{#each attrs as |a|}}
+      <div class="cb-attr-card attr-{{a.key}}">
+        <div class="cb-attr-head"><i class="{{a.icon}}"></i><span>{{a.label}}</span></div>
+        <div class="cb-attr-val">{{a.value}}</div>
+        {{#if ../canEdit}}
+        <div class="cb-attr-step">
+          <button type="button" data-action="attrStep" data-attr="{{a.key}}" data-dir="-1">−</button>
+          <button type="button" data-action="attrStep" data-attr="{{a.key}}" data-dir="1">+</button>
+        </div>
+        {{/if}}
+        <div class="cb-attr-bar"><div style="width: {{a.pct}}%"></div></div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <div class="cb-main-grid">
+    <div class="cb-stack">
+      <div class="cb-panel">
+        <h4><i class="fas fa-chart-pie"></i> {{localize "CYBUS.Main.Attributes"}}</h4>
+        <canvas id="cb-radar" class="cb-canvas cb-radar"></canvas>
+      </div>
+      {{#if projection}}
+      <div class="cb-panel cb-panel-preview">
+        <h4><i class="fas fa-calculator"></i> {{localize "CYBUS.Main.WeekPreview"}}
+          <button type="button" class="cb-ha-link" data-action="weekPreview" title="{{localize "CYBUS.Main.PreviewHint"}}"><i class="fas fa-up-right-from-square"></i></button>
+        </h4>
+        <div class="cb-pv-lines">
+          {{#each projection.lines as |l|}}
+          <div class="cb-pv-line {{l.kind}}"><em>{{l.label}}</em><i class="cb-pv-dots"></i><b>{{l.amount}}</b></div>
+          {{/each}}
+        </div>
+        <div class="cb-pv-foot">
+          <span>{{localize "CYBUS.Report.Ser.net"}}</span><b class="cb-pv-net {{#if (lt projection.net 0)}}neg{{/if}}">{{projection.net}}</b>
+          <span>{{localize "CYBUS.Report.CashAfter"}}</span><b>{{projection.cashAfter}}</b>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    <div class="cb-panel">
+      <h4><i class="fas fa-chart-line"></i> {{localize "CYBUS.Main.ProfitHistory"}}</h4>
+      <canvas id="cb-profit" class="cb-canvas cb-profit"></canvas>
+    </div>
+    <div class="cb-stack">
+      <div class="cb-panel cb-spend-panel">
+        <h4><i class="fas fa-sliders"></i> {{localize "CYBUS.Main.WeeklySpend"}}</h4>
+        <label>{{localize "CYBUS.Spend.Marketing"}} <span class="cb-hint">{{localize "CYBUS.Spend.MarketingHint"}}</span></label>
+        <input type="range" min="0" max="5" step="1" value="{{business.spend.marketing}}" data-edit="spend.marketing" {{#unless canEdit}}disabled{{/unless}}>
+        <label>{{localize "CYBUS.Spend.Maintenance"}} <span class="cb-hint">{{localize "CYBUS.Spend.MaintenanceHint"}}</span></label>
+        <input type="range" min="0" max="5" step="1" value="{{business.spend.maintenance}}" data-edit="spend.maintenance" {{#unless canEdit}}disabled{{/unless}}>
+        <label>{{localize "CYBUS.Spend.Wages"}} <span class="cb-hint">{{localize "CYBUS.Spend.WagesHint"}}</span></label>
+        <select data-edit="spend.wage" {{#unless canEdit}}disabled{{/unless}}>
+          <option value="0" {{#if (eq business.spend.wage 0)}}selected{{/if}}>60% — {{localize "CYBUS.Spend.WageStarve"}}</option>
+          <option value="1" {{#if (eq business.spend.wage 1)}}selected{{/if}}>80% — {{localize "CYBUS.Spend.WageLean"}}</option>
+          <option value="2" {{#if (eq business.spend.wage 2)}}selected{{/if}}>100%</option>
+          <option value="3" {{#if (eq business.spend.wage 3)}}selected{{/if}}>120% — {{localize "CYBUS.Spend.WageGenerous"}}</option>
+          <option value="4" {{#if (eq business.spend.wage 4)}}selected{{/if}}>150% — {{localize "CYBUS.Spend.WageLavish"}}</option>
+        </select>
+        <div class="cb-ledger-pair" title="{{localize "CYBUS.Main.LedgerPairHint"}}">
+          <div class="cb-ledger-box">
+            <span>{{localize "CYBUS.Main.Expenses"}}</span>
+            <b>{{projection.expenses}}</b>
+          </div>
+          <div class="cb-ledger-box net">
+            <span>{{localize "CYBUS.Main.NetProfit"}}</span>
+            <b class="{{#if (lt projection.net 0)}}neg{{/if}}">{{projection.net}}</b>
+          </div>
+        </div>
+      </div>
+      <div class="cb-panel cb-trends-panel">
+        <h4><i class="fas fa-chart-line"></i> {{localize "CYBUS.Main.Trends"}}
+          <button type="button" class="cb-ha-link" data-action="trends" title="{{localize "CYBUS.Main.TrendsHint"}}"><i class="fas fa-up-right-from-square"></i></button>
+        </h4>
+        <div class="cb-rp-legend">
+          {{#each trendSeries as |s|}}
+          <button type="button"
+                  class="cb-trend-chip {{#if s.active}}active{{/if}}"
+                  data-action="toggleSeries"
+                  data-series="{{s.key}}"
+                  style="--chip: {{s.color}}">
+            <i class="fas fa-circle"></i> {{s.label}}
+          </button>
+          {{/each}}
+        </div>
+        <canvas id="cb-trends-main" class="cb-canvas cb-trends-mini"></canvas>
+      </div>
+    </div>
+  </div>
+
+  {{#if business.story.pending.length}}
+  <div class="cb-pending-strip">
+    <strong><i class="fas fa-dice"></i> {{localize "CYBUS.Events.Pending"}}:</strong>
+    {{#each business.story.pending as |e|}}
+    <span class="cb-pending-chip {{#if (lt e.dueIn 1)}}urgent{{/if}}">{{e.title}} ({{localize "CYBUS.Events.Difficulty"}} {{e.difficulty}} · {{e.dueIn}}w)</span>
+    {{/each}}
+  </div>
+  {{/if}}
+  {{else}}
+  <div class="cb-empty">
+    <p>{{localize "CYBUS.App.NoBusiness"}}</p>
+    {{#if isGM}}<button type="button" class="cb-btn-primary" data-action="createBusiness"><i class="fas fa-plus"></i> {{localize "CYBUS.App.CreateBusiness"}}</button>{{/if}}
+  </div>
+  {{/if}}
+</section>
