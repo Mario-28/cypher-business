@@ -9,16 +9,16 @@ import {
   defaultFacility, defaultProduct, defaultCompetitor, addLog, migrate
 } from '../state/store.mjs';
 import { validateBackup, buildEnvelope } from '../state/backup.mjs';
-import { randomWorker, randomCrew } from '../engine/names.mjs';
+import { randomWorker, randomCrew, pickFirstName, lwToWorker } from '../engine/names.mjs';
 import { projectWeek, financeCostMult, syncStrength } from '../engine/week.mjs';
-import { workerEffectiveness } from '../engine/people.mjs';
+import { workerEffectiveness, describeWorker, rollAppearance, seededRng, workerDossierText, workerDossierHtml } from '../engine/people.mjs';
 import { rollWeeklyEvent, removeEvent, removeJournalEntries, failMultiplier, scaledSpec, consequenceTokens, logEventStep, resolveEvent, difficultyDc } from '../engine/story-events.mjs';
 import { describeRival, rollHouseProfile, rollFigure, seedCompetitor, RIVAL_NAMES, RIVAL_MOS } from '../engine/rivals.mjs';
 import { CbNoteEditor, sanitizeNoteHtml } from './note-editor.mjs';
 import { CbRulebook } from './rulebook.mjs';
 import { armLink, isLinkWaiting, initRollLink, LINK_TTL_MS } from './roll-link.mjs';
 import { renovate, renovateCost, RENOVATE_GAIN } from '../engine/facilities.mjs';
-import { currentDateLabel, dateLabelAfterDays, calendariaActive, openCalendaria } from '../calendaria.mjs';
+import { currentDateLabel, dateLabelAfterDays, calendariaActive, openCalendaria, syncBusinessCalendarNotes, clearBusinessCalendarNotes } from '../calendaria.mjs';
 import { THEMES, DEFAULT_THEME, THEME_SETTING } from '../themes.mjs';
 import { drawRadar, drawProfit, drawTrends, TREND_SERIES } from './graphs.mjs';
 import { openWeekPreview, openTrends } from './reports.mjs';
@@ -148,10 +148,14 @@ function showWorkerTip(btn) {
   const b = getBusiness(loadState(), btn.dataset.businessId);
   const w = b?.staff?.workers.find((x) => x.id === btn.dataset.workerId);
   if (!w) return;
+  // v1.38 probation: players see name + appearance only during the first month
+  const masked = !game.user.isGM && (b.week?.index ?? 0) < 4;
   const pop = ensureWorkerPop();
   const genderKey = w.gender === 'f' ? 'CYBUS.Worker.GenderF' : 'CYBUS.Worker.GenderM';
   const L = (k) => game.i18n.localize(k);
   const l = w.look;
+  const initials = (w.name ?? '?')
+    .split(/\s+/).map((p) => p[0] ?? '').join('').slice(0, 2).toUpperCase();
   const lookRows = l ? `
     <span class="cb-worker-pop-look">
       <span class="cb-look-row"><b>${L('CYBUS.Worker.LookHair')}</b><span>${esc(l.hair)}, ${esc(l.style)}</span></span>
@@ -162,10 +166,19 @@ function showWorkerTip(btn) {
       <span class="cb-look-row"><b>${L('CYBUS.Worker.LookBeauty')}</b><span>${esc(l.beautyWord)} (${l.beauty}/10)</span></span>
     </span>` : '';
   pop.innerHTML = `
-    <span class="cb-worker-pop-head">${esc(w.name)} &#183; ${w.age} &#183; ${L(genderKey)}</span>
-    <span class="cb-worker-pop-desc">${esc(w.description ?? '')}</span>
-    ${lookRows}
-    <span class="cb-worker-pop-traits">${(w.traits ?? []).map((t) => `<span class="cb-trait-chip">${esc(t)}</span>`).join('')}</span>`;
+    <div class="cb-wp-card">
+      <span class="cb-wp-topline"></span>
+      <div class="cb-wp-head">
+        <span class="cb-wp-avatar" data-gender="${w.gender}">${esc(initials)}</span>
+        <span class="cb-wp-id">
+          <span class="cb-wp-name">${esc(w.name)}</span>
+          ${masked ? '' : `<span class="cb-wp-meta">${w.age} &#183; ${L(genderKey)} &#183; ${L('CYBUS.Worker.Effectiveness')} ${workerEffectiveness(w)}/10</span>`}
+        </span>
+      </div>
+      ${masked ? '' : `<span class="cb-worker-pop-desc">${esc(w.description ?? '')}</span>`}
+      ${lookRows}
+      ${masked ? '' : `<span class="cb-worker-pop-traits">${(w.traits ?? []).map((t) => `<span class="cb-trait-chip">${esc(t)}</span>`).join('')}</span>`}
+    </div>`;
   const themed = btn.closest('[data-cb-theme]');
   if (themed) {
     const cs = getComputedStyle(themed);
@@ -178,8 +191,8 @@ function showWorkerTip(btn) {
     const pw = pop.offsetWidth;
     const ph = pop.offsetHeight;
     const left = Math.max(8, Math.min(r.left + r.width / 2 - pw / 2, window.innerWidth - pw - 8));
-    let top = r.top - ph - 8;
-    if (top < 8) top = r.bottom + 8;
+    let top = r.top - ph - 10;
+    if (top < 8) top = r.bottom + 10;
     pop.style.left = `${left}px`;
     pop.style.top = `${top}px`;
     pop.style.visibility = '';
@@ -259,6 +272,7 @@ export async function resolveLinkedRoll({ businessId, eventId, solutionIndex, ou
     return;
   }
   await saveAndBroadcast(state);
+  syncBusinessCalendarNotes(businessId).catch((err) => console.warn('cypher-business | calendar sync failed:', err));
   await postEventCard(result, { rollerName, total, dc });
   refreshApps();
 }
@@ -311,11 +325,13 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
       hireFive: CypherBusinessApp.#hireFive,
       fireWorker: CypherBusinessApp.#fireWorker,
       cycleGender: CypherBusinessApp.#cycleGender,
+      exportWorker: CypherBusinessApp.#exportWorker,
       addRole: CypherBusinessApp.#addRole,
       removeRole: CypherBusinessApp.#removeRole,
       clearRole: CypherBusinessApp.#clearRole,
       clearLeadWorker: CypherBusinessApp.#clearLeadWorker,
       addLeadWorker: CypherBusinessApp.#addLeadWorker,
+      toggleLwCrew: CypherBusinessApp.#toggleLwCrew,
       removeLeadWorker: CypherBusinessApp.#removeLeadWorker,
       logEventStep: CypherBusinessApp.#logEventStep,
       resolveEventSolution: CypherBusinessApp.#resolveEventSolution,
@@ -397,6 +413,10 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     // weekly projection computed once — reused by the context key and the
     // per-product slices on the product cards (matched by name)
     const projection = business ? projectWeek(business) : null;
+
+    // v1.38 personnel probation: during the business's first month (week.index
+    // < 4) players see names + appearance only — stats/traits are GM-only intel
+    const maskWorkerAttrs = (business?.week?.index ?? 0) < 4 && !game.user.isGM;
 
     return {
       business,
@@ -501,7 +521,7 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
         };
       }),
       // personnel rows enriched with the derived effectiveness stat
-      workers: (business?.staff?.workers ?? []).map((w) => ({ ...w, eff: workerEffectiveness(w) })),
+      workers: (business?.staff?.workers ?? []).map((w) => ({ ...w, eff: workerEffectiveness(w), masked: maskWorkerAttrs })),
       // leadership roster enriched for the role cards
       roles: (business?.leadership?.roles ?? []).map((r) => ({
         ...r,
@@ -526,9 +546,26 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
         domainLabel: game.i18n.localize(`CYBUS.Role.Domains.${ROLE_DOMAINS.includes(w.domain) ? w.domain : 'operations'}.Label`),
         domainDesc: game.i18n.localize(`CYBUS.Role.Domains.${ROLE_DOMAINS.includes(w.domain) ? w.domain : 'operations'}.Desc`),
         isNPC: w.actorIsNPC !== false,
-        wageWeekly: Math.round(Math.max(0, w.wage ?? 0) * wageCostMult)
+        wageWeekly: Math.round(Math.max(0, w.wage ?? 0) * wageCostMult),
+        onCrew: (business?.staff?.workers ?? []).some((x) => x.lwId === w.id)
       }))
     };
+  }
+
+  /** v1.39: one shared banner layer behind all tabs — same image the main
+   *  tab hero uses, kept faint so tables/cards stay readable. Removed when
+   *  the business has no banner. */
+  #syncBanner(src) {
+    const root = this.element;
+    if (!root) return;
+    let bg = root.querySelector(':scope > .cb-app-banner');
+    if (!src) { bg?.remove(); return; }
+    if (!bg) {
+      bg = document.createElement('div');
+      bg.className = 'cb-app-banner';
+      root.prepend(bg);
+    }
+    bg.style.backgroundImage = `url("${src}")`;
   }
 
   async _onRender(context, options) {
@@ -538,6 +575,9 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
 
     // theme attribute drives every color in the CSS
     root.setAttribute('data-cb-theme', context.theme ?? DEFAULT_THEME);
+
+    // v1.39: hero banner from the main tab stretched faintly behind every tab
+    this.#syncBanner(context.business?.banner);
 
     // ── tab switching ──
     root.querySelectorAll('.cb-tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === this.activeTab));
@@ -553,6 +593,9 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
         if (!event.target.matches('.cb-journal-check-all')) return;
         root.querySelectorAll('.cb-journal-check').forEach((c) => { c.checked = event.target.checked; });
       });
+      // leading-worker hard-hat toggle rides a data-action on the LABEL (the
+      // input is pointer-events:none, and Blink drops the label-forwarded click
+      // on such inputs — no change event ever fires; see v1.37.2)
       this._cbChangeBound = true;
     }
 
@@ -851,6 +894,7 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     const b = getBusiness(state, this.businessId);
     if (!b) return;
     if (!window.confirm(game.i18n.format('CYBUS.App.DeleteConfirm', { name: b.name }))) return;
+    await clearBusinessCalendarNotes(b); // v1.43 — remove its Calendaria notes first
     delete state.businesses[this.businessId];
     await saveAndBroadcast(state);
     this.businessId = null;
@@ -1101,7 +1145,55 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     const id = target.dataset.workerId;
     await this.#mutate((state2, b2) => {
       const w = b2.staff.workers.find((x) => x.id === id);
-      if (w) w.gender = w.gender === 'f' ? 'm' : 'f';
+      if (!w) return;
+      w.gender = w.gender === 'f' ? 'm' : 'f';
+      // name follows the badge (family name kept) — deterministic per flip
+      const parts = String(w.name ?? '').trim().split(/\s+/).filter(Boolean);
+      const last = parts.slice(1).join(' ');
+      const first = pickFirstName(w.gender, seededRng(`${w.name ?? w.id}:${w.gender}:first`));
+      w.name = last ? `${first} ${last}` : first;
+      // prose + portrait follow the badge — deterministic per (name, gender)
+      // so flipping back restores the exact previous persona.
+      w.description = describeWorker(w, seededRng(`${w.name}:${w.gender}`));
+      w.look = rollAppearance(w, seededRng(`${w.name}:${w.gender}:look`));
+    });
+  }
+
+  /** GM: export one worker's persona card — posted to chat for the table,
+   *  plain-text copy on the clipboard for journals / notes. GM note stays
+   *  internal (the dossier builders never include it). */
+  static async #exportWorker(event, target) {
+    const b = getBusiness(loadState(), target.dataset.businessId);
+    const w = b?.staff?.workers.find((x) => x.id === target.dataset.workerId);
+    if (!w) return;
+    const L = (k) => game.i18n.localize(k);
+    await ChatMessage.create({
+      content: workerDossierHtml(w, L),
+      speaker: ChatMessage.getSpeaker({ user: game.user })
+    });
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(workerDossierText(w, L));
+      copied = true;
+    } catch {
+      copied = false; // clipboard API needs a secure context — chat card still landed
+    }
+    ui.notifications.info(L(copied ? 'CYBUS.Worker.ExportDone' : 'CYBUS.Worker.ExportNoClipboard'));
+  }
+
+  /** GM: hard-hat checkbox — put this lead on the floor (personnel tab).
+   *  Click lands on the label (data-action), NOT the hidden input: Blink drops
+   *  label-forwarded clicks on pointer-events:none inputs, so no change event
+   *  ever fires — we derive the next state from the roster, never the checkbox. */
+  static async #toggleLwCrew(event, target) {
+    const id = target.dataset.lwId;
+    await this.#mutate((state2, b2) => {
+      const lw = (b2.leadWorkers ?? []).find((x) => x.id === id);
+      if (!lw) return;
+      const workers = ((b2.staff ??= { workers: [] }).workers ??= []);
+      const on = !workers.some((w) => w.lwId === id);
+      if (on) workers.push(lwToWorker(lw, seededRng(`${id}:crew`)));
+      else b2.staff.workers = workers.filter((w) => w.lwId !== id);
     });
   }
 
@@ -1135,6 +1227,8 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     await this.#mutate((state, b) => {
       const w = (b.leadWorkers ?? []).find((x) => x.id === target.dataset.lwId);
       if (w) { w.actorUuid = null; w.actorName = null; w.portrait = null; }
+      // their floor job goes with the actor — no orphan payroll entries
+      b.staff.workers = (b.staff?.workers ?? []).filter((x) => x.lwId !== target.dataset.lwId);
     });
   }
 
@@ -1154,6 +1248,8 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     await this.#mutate((state, b) => {
       const i = (b.leadWorkers ?? []).findIndex((x) => x.id === target.dataset.lwId);
       if (i >= 0) b.leadWorkers.splice(i, 1);
+      // their floor job goes with the slot — no orphan payroll entries
+      b.staff.workers = (b.staff?.workers ?? []).filter((w) => w.lwId !== target.dataset.lwId);
     });
   }
 
@@ -1170,6 +1266,7 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     updated.log.unshift({ id: uid('log'), week: updated.week.index, type: `ev_${ev.cat}`, title: ev.title, text: `${ev.text} — lands ${ev.dateLabel}, ${ev.dueIn}w to resolve (GM-forced).`, at: Date.now() });
     state.businesses[this.businessId] = updated;
     await saveAndBroadcast(state);
+    syncBusinessCalendarNotes(this.businessId).catch((err) => console.warn('cypher-business | calendar sync failed:', err));
     ui.notifications.info(`${ev.title} — ${game.i18n.localize('CYBUS.Events.Forced')}`);
     this.render();
   }
@@ -1185,6 +1282,7 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     updated.log.unshift({ id: uid('log'), week: updated.week.index, type: `ev_${removed.cat}`, title: removed.title, text: `${removed.text} — removed by the GM; no consequences.`, at: Date.now() });
     state.businesses[this.businessId] = updated;
     await saveAndBroadcast(state);
+    syncBusinessCalendarNotes(this.businessId).catch((err) => console.warn('cypher-business | calendar sync failed:', err));
     ui.notifications.info(`${removed.title} — ${game.i18n.localize('CYBUS.Events.Deleted')}`);
     this.render();
   }
@@ -1244,7 +1342,10 @@ export class CypherBusinessApp extends HandlebarsApplicationMixin(ApplicationV2)
     await this.#mutate((state, b) => {
       result = resolveEvent(b, target.dataset.eventId, solutionIndex, outcome);
     });
-    if (result) await postEventCard(result);
+    if (result) {
+      syncBusinessCalendarNotes(this.businessId).catch((err) => console.warn('cypher-business | calendar sync failed:', err));
+      await postEventCard(result);
+    }
   }
 
   /**

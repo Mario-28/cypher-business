@@ -139,7 +139,7 @@
         },
         "operations": {
           "Label": "Operations",
-          "Desc": "Runs the shop floor. Operations roles raise facility & staff efficiency — more product out of the same buildings."
+          "Desc": "Runs the shop floor. Operations roles stretch the same crew across more line demand — each point of ops power lifts the staffing floor by 5% (up to +25%)."
         },
         "marketing": {
           "Label": "Marketing",
@@ -173,7 +173,8 @@
       "Add": "Add slot",
       "New": "New Lead",
       "NewPrompt": "Leading worker title:",
-      "Weight": "counts at half weight"
+      "Weight": "counts at half weight",
+      "CrewHint": "Put this lead on the floor — adds them to the personnel roster as a paid worker (uncheck to pull them back off)"
     },
     "Worker": {
       "Headcount": "on payroll",
@@ -193,6 +194,11 @@
       "GenderM": "Male",
       "GenderToggle": "click to change",
       "Profile": "Worker file",
+      "Export": "Export dossier",
+      "LeadingTag": "Leading worker — on the floor via the Leadership tab",
+      "ProbationHint": "Probation — the books open after the first month",
+      "ExportDone": "Dossier posted to chat and copied to the clipboard.",
+      "ExportNoClipboard": "Dossier posted to chat (clipboard unavailable).",
       "Traits": "Traits",
       "LookHair": "Hair",
       "LookEyes": "Eyes",

@@ -9,7 +9,7 @@
 import { SOCKET_CHANNEL, esc, signed, ATTRIBUTES } from './constants.mjs';
 import { loadState, saveState, getBusiness, canManage, addLog } from './state/store.mjs';
 import { resolveWeek } from './engine/week.mjs';
-import { currentDateLabel, dateLabelAfterDays, advanceDays } from './calendaria.mjs';
+import { currentDateLabel, dateLabelAfterDays, advanceDays, syncBusinessCalendarNotes } from './calendaria.mjs';
 
 const _handledGmRequests = new Set();
 const _openWeekDialogs = new Map(); // requestId → DialogV2 (live week-request prompts)
@@ -130,6 +130,10 @@ export async function runWeekAsGm(businessId, { requestedBy = null, advance = tr
   broadcastStateChanged();
   const { refreshApps } = await import('./app/business-app.mjs');
   refreshApps();
+
+  // v1.43 — refresh player-visible deadline notes + the week-close popup in
+  // Calendaria (fire-and-forget; never blocks the week run)
+  syncBusinessCalendarNotes(businessId).catch((err) => console.warn('cypher-business | calendar sync failed:', err));
 
   // advance the world calendar one week (silently; Calendaria handles sync)
   if (advance) advanceDays(7);

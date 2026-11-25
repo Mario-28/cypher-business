@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export const MODULE_ID = 'cypher-business';
-export const MODULE_VERSION = '1.33.0';
+export const MODULE_VERSION = '1.44.0';
 
 export const SOCKET_CHANNEL = `system.${MODULE_ID}`;
 

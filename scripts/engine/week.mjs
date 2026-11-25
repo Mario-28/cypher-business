@@ -262,8 +262,13 @@ export function resolveWeek(business, rng = Math.random, label = null, dateLabel
   // ── 6. competitor phase ────────────────────────────────────────────────
   const compNotes = [];
   for (const c of b.competitors) {
-    const attack = c.aggression + d(rng, 6) - Math.min(2, power.security * 0.8);
-    const defense = b.attributes.marketing + b.attributes.leadership + d(rng, 6);
+    const attack = c.aggression + d(rng, 6) - Math.min(2, power.security * 0.8)
+      + (b.attributes.profit >= 7 ? 1 : 0); // v1.40 — success makes you a juicier target
+    // v1.42 — crew quality defends market share: a sharp crew keeps service
+    // consistent and customers loyal, so rivals can't undercut as easily.
+    // round(p/3) caps the contribution at +3 (personnel 10).
+    const defense = b.attributes.marketing + b.attributes.leadership
+      + Math.round(b.attributes.personnel / 3) + d(rng, 6);
     const band = rivalBand(attack, defense);
     if (band === 'rivalBig') {
       const prod = activeProducts(b);
@@ -298,10 +303,18 @@ export function resolveWeek(business, rng = Math.random, label = null, dateLabel
   // Profit per unit is the line's `value` (× the productivity price premium).
   const heads = crewNeeded(b);
   const crew = b.staff.workers.length;
-  const staffRatio = heads > 0 ? clamp(crew / heads, 0, 1) : 1;
+  // v1.41 — operations domain stretches the same payroll across more line
+  // demand: scheduling, cross-training, less idle time. +5% per point of ops
+  // power, capped at +25% — needs a real ops bench, one manager can't carry it.
+  const opsStretch = 1 + Math.min(0.25, power.operations * 0.05);
+  const staffRatio = heads > 0 ? clamp((crew * opsStretch) / heads, 0, 1) : 1;
   const fac = facilityEfficiency(b);
   const qualMult = 1 + (avgProductivity(b) - 5) / 20;
-  const mkt = 0.6 + b.attributes.marketing / 12 + Math.min(0.15, power.marketing * 0.05);
+  // v1.40 — profit is load-bearing: a thriving business sells on reputation.
+  // Asymmetric on purpose — success compounds slowly at the top, but a
+  // struggling business gets no penalty here (the death spiral lives in §9).
+  const mkt = 0.6 + b.attributes.marketing / 12 + Math.min(0.15, power.marketing * 0.05)
+    + Math.max(0, (b.attributes.profit - 5) * 0.02);
   const dangerMult = 1 - b.attributes.danger * 0.03;
   // price-demand coupling (balance probe 2026-11-24): cheap lines move volume,
   // pricey lines move margin. priceFactor bottoms out at 0.15 so luxury never
@@ -312,7 +325,13 @@ export function resolveWeek(business, rng = Math.random, label = null, dateLabel
     const units = Math.max(0, p.demand * mkt * dangerMult * staffRatio * fac * leadMult * (0.7 + rng() * 0.6) * 3 * priceFactor);
     gross += Math.round(units * (p.value ?? 10) * qualMult);
   }
-  if (heads > crew) notes.push(`Short-staffed — the lines want ${heads} workers, the payroll has ${crew}. Everything runs at ${Math.round(staffRatio * 100)}%.`);
+  if (heads > crew) {
+    const rawPct = Math.round(clamp(crew / heads, 0, 1) * 100);
+    const runPct = Math.round(staffRatio * 100);
+    notes.push(runPct > rawPct
+      ? `Short-staffed — the lines want ${heads} workers, the payroll has ${crew}. Sharp operations lift the floor to ${runPct}%.`
+      : `Short-staffed — the lines want ${heads} workers, the payroll has ${crew}. Everything runs at ${runPct}%.`);
+  }
   if (gross > 0) cash(gross, 'Sales', 'income');
   // demand drifts toward baseline (active lines only — a paused line keeps
   // its market pull frozen while it's off the floor)
@@ -340,6 +359,24 @@ export function resolveWeek(business, rng = Math.random, label = null, dateLabel
     attr('morale', -1);
     notes.push('Debt collectors are circling — the treasury is underwater.');
   }
+
+  // ── 9b. profit standing — success draws attention, failure draws doubt ──
+  // Read BEFORE this week's net updates the dial: the table reacts to the
+  // track record they can see, not the week that just ended.
+  const standing = b.attributes.profit;
+  if (standing >= 8 && d(rng, 3) === 3) { // slow creep — the underworld notices a fat purse
+    attr('danger', 1);
+    notes.push('Word of your success spreads through the district — the underworld takes notice.');
+  }
+  if (standing <= 2) {
+    attr('leadership', -1);
+    notes.push('The backers read the ledger and lose confidence.');
+  }
+  if (standing <= 1 && b.week.index % 2 === 0) {
+    attr('morale', -1);
+    notes.push('Layoff rumors move through the crew.');
+  }
+
   // profit attribute trends with recent net results
   const net = b.treasury.cash - (business.treasury.cash); // approx this week's net
   attr('profit', net > 150 ? 1 : net < -150 ? -1 : 0);
@@ -397,9 +434,12 @@ export function projectWeek(business) {
 
   const heads = crewNeeded(b);
   const crew = b.staff.workers.length;
-  const staffRatio = heads > 0 ? clamp(crew / heads, 0, 1) : 1;
+  // opsStretch mirrors resolveWeek §7 — see there for the rationale
+  const opsStretch = 1 + Math.min(0.25, power.operations * 0.05);
+  const staffRatio = heads > 0 ? clamp((crew * opsStretch) / heads, 0, 1) : 1;
   const qualMult = 1 + (avgProductivity(b) - 5) / 20;
-  const mkt = 0.6 + b.attributes.marketing / 12 + Math.min(0.15, power.marketing * 0.05);
+  const mkt = 0.6 + b.attributes.marketing / 12 + Math.min(0.15, power.marketing * 0.05)
+    + Math.max(0, (b.attributes.profit - 5) * 0.02);
   const dangerMult = 1 - b.attributes.danger * 0.03;
   const fac = facilityEfficiency(b);
   let gross = 0;

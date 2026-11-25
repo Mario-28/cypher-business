@@ -121,6 +121,12 @@
           <div class="cb-lw-head">
             <input class="cb-lw-title{{#unless ../canEdit}} readonly{{/unless}}" data-edit="lw.{{w.id}}.title" value="{{w.title}}" {{#unless ../canEdit}}disabled{{/unless}} />
             <div class="cb-lw-tags">
+              {{#if ../canEdit}}{{#if w.actorUuid}}
+              <label class="cb-lw-crew{{#if w.onCrew}} on{{/if}}" data-action="toggleLwCrew" data-lw-id="{{w.id}}" title="{{localize "CYBUS.LW.CrewHint"}}">
+                <input type="checkbox" {{#if w.onCrew}}checked{{/if}} tabindex="-1">
+                <i class="fas fa-hard-hat"></i>
+              </label>
+              {{/if}}{{/if}}
               {{#if ../canEdit}}
               <select class="cb-role-domain" data-edit="lw.{{w.id}}.domain" title="{{localize "CYBUS.Role.DomainHint"}}">
                 {{#each ../domains as |d|}}<option value="{{d.key}}"{{#if (eq d.key w.domainKey)}} selected{{/if}}>{{d.label}}</option>{{/each}}

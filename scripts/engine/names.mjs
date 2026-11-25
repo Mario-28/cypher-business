@@ -8,17 +8,32 @@ import { uid, clampInt } from '../constants.mjs';
 import { workerEffectiveness } from './people.mjs';
 import { rollPersona, rollAppearance } from './people.mjs';
 
-export const FIRST = [
-  'Aldous', 'Mira', 'Kellan', 'Sera', 'Dovan', 'Petra', 'Ivo', 'Lysa', 'Cormac', 'Nadia',
-  'Thessaly', 'Brann', 'Odessa', 'Ferro', 'Wren', 'Haskel', 'Isolde', 'Jory', 'Katya', 'Lazlo',
-  'Marnie', 'Nils', 'Ottavia', 'Pavel', 'Quilla', 'Rennick', 'Sable', 'Tam', 'Ulric', 'Vessa',
-  'Waldo', 'Xandra', 'Yorick', 'Zora', 'Anselm', 'Berta', 'Cassius', 'Della', 'Emeric', 'Fenna',
-  'Goran', 'Hella', 'Idris', 'Jessa', 'Korrin', 'Livia', 'Marek', 'Nerissa', 'Osric', 'Priya',
-  'Quentin', 'Rosalind', 'Stellan', 'Tilda', 'Ulf', 'Verity', 'Wilhelm', 'Yara', 'Zebulon', 'Anthea',
-  'Borin', 'Cressida', 'Dain', 'Elowen', 'Falko', 'Gisela', 'Halvar', 'Ines', 'Jasper', 'Kira',
-  'Leander', 'Magda', 'Nox', 'Oberon', 'Perpetua', 'Roland', 'Sybil', 'Torvald', 'Una', 'Viktor',
-  'Winslow', 'Xiomara', 'Yannick', 'Zelda', 'Ambrose', 'Beatrix', 'Cyrus', 'Delphine', 'Edmund', 'Freya'
+// Gendered first-name pools — personnel and rival figures draw the first
+// name from the pool matching their rolled gender (see pickFirstName).
+export const FEMALE_FIRST = [
+  'Mira', 'Sera', 'Petra', 'Lysa', 'Nadia', 'Thessaly', 'Odessa', 'Wren', 'Isolde', 'Katya',
+  'Marnie', 'Ottavia', 'Quilla', 'Sable', 'Vessa', 'Xandra', 'Zora', 'Berta', 'Della', 'Fenna',
+  'Hella', 'Jessa', 'Livia', 'Nerissa', 'Priya', 'Rosalind', 'Tilda', 'Verity', 'Yara', 'Anthea',
+  'Cressida', 'Elowen', 'Gisela', 'Ines', 'Kira', 'Magda', 'Perpetua', 'Sybil', 'Una', 'Xiomara',
+  'Zelda', 'Beatrix', 'Delphine', 'Freya'
 ];
+
+export const MALE_FIRST = [
+  'Aldous', 'Kellan', 'Dovan', 'Ivo', 'Cormac', 'Brann', 'Ferro', 'Haskel', 'Jory', 'Lazlo',
+  'Nils', 'Pavel', 'Rennick', 'Tam', 'Ulric', 'Waldo', 'Yorick', 'Anselm', 'Cassius', 'Emeric',
+  'Goran', 'Idris', 'Korrin', 'Marek', 'Osric', 'Quentin', 'Stellan', 'Ulf', 'Wilhelm', 'Zebulon',
+  'Borin', 'Dain', 'Falko', 'Halvar', 'Jasper', 'Leander', 'Nox', 'Oberon', 'Roland', 'Torvald',
+  'Viktor', 'Winslow', 'Yannick', 'Ambrose', 'Cyrus', 'Edmund'
+];
+
+/** Full pool — legacy import surface (rivals docs, old exports). */
+export const FIRST = [...FEMALE_FIRST, ...MALE_FIRST];
+
+/** First name from the pool matching the worker's gender. */
+export function pickFirstName(gender, rng) {
+  const pool = gender === 'f' ? FEMALE_FIRST : MALE_FIRST;
+  return pool[Math.floor(rng() * pool.length)];
+}
 
 export const LAST = [
   'Ashford', 'Blackbriar', 'Corvid', 'Dunmore', 'Everly', 'Fairwind', 'Grimsbane', 'Halloway', 'Ironwood', 'Jex',
@@ -29,12 +44,9 @@ export const LAST = [
   'Abernathy', 'Boone', 'Carstairs', 'Delacroix', 'Ellery', 'Fairbanks', 'Granger', 'Hollis', 'Ingram', 'Joyner'
 ];
 
-/** Weighted age: most workers land 22–50. */
+/** Uniform 18–30 — the Ninth World hires young and burns fast. */
 function rollAge(rng) {
-  const r = rng();
-  if (r < 0.15) return 18 + d(rng, 4);        // 18–22 young blood
-  if (r < 0.75) return 23 + d(rng, 27);       // 23–49 prime
-  return 50 + d(rng, 15);                     // 50–65 veterans
+  return 18 + d(rng, 13) - 1; // 18–30, flat
 }
 
 /** Quality & force weighted toward the middle, tails possible. */
@@ -49,9 +61,9 @@ function rollGender(rng) {
 }
 
 export function randomWorker(rng = Math.random) {
-  const first = FIRST[Math.floor(rng() * FIRST.length)];
-  const last = LAST[Math.floor(rng() * LAST.length)];
   const gender = rollGender(rng);
+  const first = pickFirstName(gender, rng);
+  const last = LAST[Math.floor(rng() * LAST.length)];
   const age = rollAge(rng);
   const productivity = rollStat(rng);
   const morale = clampInt(4 + d(rng, 4)); // 5–8 starters
@@ -74,4 +86,43 @@ export function randomWorker(rng = Math.random) {
 
 export function randomCrew(count, rng = Math.random) {
   return Array.from({ length: count }, () => randomWorker(rng));
+}
+
+/** Gender for a NAMED slot, hashed from the name — deterministic so a given
+ *  actor always gets the same persona; the GM can flip it on the roster. */
+function genderFromName(name) {
+  const h = [...String(name)].reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  return h % 2 ? 'f' : 'm';
+}
+
+/**
+ * Snapshot a leading-worker slot into a payroll worker (personnel tab).
+ * The slot stays the leadership-side record; the worker is a real crew
+ * member — wage, morale, productivity all feed the weekly engine.
+ */
+export function lwToWorker(lw, rng = Math.random) {
+  const named = typeof lw.actorName === 'string' && lw.actorName.trim() !== '';
+  const gender = named ? genderFromName(lw.actorName) : rng() < 0.5 ? 'f' : 'm';
+  const name = named
+    ? lw.actorName.trim()
+    : `${pickFirstName(gender, rng)} ${LAST[Math.floor(rng() * LAST.length)]}`;
+  const age = rollAge(rng);
+  const productivity = clampInt(lw.productivity ?? rollStat(rng), 0, 10);
+  const morale = clampInt(lw.morale ?? clampInt(4 + d(rng, 4)), 0, 10);
+  const effectiveness = workerEffectiveness({ productivity, morale });
+  const persona = rollPersona({ gender, age, productivity, morale }, rng);
+  return {
+    id: uid('wrk'),
+    lwId: lw.id ?? null,
+    name,
+    gender,
+    age,
+    morale,
+    productivity,
+    wage: 10 + productivity * 2 + effectiveness,
+    note: '',
+    description: persona.description,
+    traits: persona.traits,
+    look: rollAppearance({ gender, age }, rng)
+  };
 }

@@ -2,7 +2,7 @@
   "id": "cypher-business",
   "title": "Cypher Business",
   "description": "A weekly business-management engine for Foundry VTT: attributes, personnel, leadership, events, competitors, facilities and products \u2014 with Calendaria integration and six themes.",
-  "version": "1.33.0",
+  "version": "1.44.0",
   "authors": [
     {
       "name": "Mario-28"

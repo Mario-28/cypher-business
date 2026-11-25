@@ -146,3 +146,57 @@ export function rollAppearance(w, rng = Math.random) {
 export function workerEffectiveness(w) {
   return clampInt(Math.round(((w.productivity ?? 5) + (w.morale ?? 5)) / 2), 0, 10);
 }
+
+// ─── dossier export — the tooltip card as portable text / chat HTML ─────────
+// Pure builders (L = localize fn injected) so both the app action and the
+// node tests share one source. GM note is deliberately EXCLUDED: it is an
+// internal annotation and must never reach public chat.
+
+const escHtml = (s) =>
+  String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/** Plain-text dossier — clipboard / journal paste. */
+export function workerDossierText(w, L = (k) => k) {
+  const genderKey = w.gender === 'f' ? 'CYBUS.Worker.GenderF' : 'CYBUS.Worker.GenderM';
+  const l = w.look ?? {};
+  const lines = [
+    `${w.name} — ${L(genderKey)}, ${w.age}`,
+    `${L('CYBUS.Worker.Effectiveness')} ${workerEffectiveness(w)}/10 · ${L('CYBUS.Worker.Morale')} ${w.morale} · ${L('CYBUS.Worker.Productivity')} ${w.productivity} · ${L('CYBUS.Worker.Wage')} ${w.wage ?? 0}`,
+    '',
+    w.description ?? '',
+    '',
+    `${L('CYBUS.Worker.LookHair')}: ${l.hair ?? '—'}, ${l.style ?? ''}`.trim(),
+    `${L('CYBUS.Worker.LookEyes')}: ${l.eyes ?? '—'}`,
+    `${L('CYBUS.Worker.LookHeight')}: ${l.height ?? '—'} cm · ${L('CYBUS.Worker.LookWeight')}: ${l.weight ?? '—'} kg · ${L('CYBUS.Worker.LookBuild')}: ${l.build ?? '—'}`,
+    `${L('CYBUS.Worker.LookBeauty')}: ${l.beautyWord ?? '—'} (${l.beauty ?? 0}/10)`
+  ];
+  if (Array.isArray(w.traits) && w.traits.length) lines.push('', w.traits.join(', '));
+  return lines.join('\n');
+}
+
+/** Styled HTML dossier for a chat card — inline styles (chat lives outside module CSS). */
+export function workerDossierHtml(w, L = (k) => k) {
+  const genderKey = w.gender === 'f' ? 'CYBUS.Worker.GenderF' : 'CYBUS.Worker.GenderM';
+  const l = w.look ?? {};
+  const dim = 'opacity:.72;font-size:11px';
+  const row = (label, value) =>
+    `<div style="display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.08)"><span style="${dim}">${escHtml(label)}</span><span>${escHtml(value)}</span></div>`;
+  const traits = (Array.isArray(w.traits) ? w.traits : [])
+    .map((t) => `<span style="display:inline-block;padding:1px 8px;margin:2px 4px 0 0;border-radius:999px;font-size:11px;font-weight:700;border:1px solid #c9a22766;color:#c9a227">${escHtml(t)}</span>`)
+    .join('');
+  return `<div style="border:1px solid #c9a22755;border-radius:10px;padding:10px 14px;background:rgba(10,10,14,.35);font-size:13px;line-height:1.5">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:1px solid rgba(255,255,255,.14);padding-bottom:5px;margin-bottom:6px">
+    <span style="font-weight:800;font-size:15px">${escHtml(w.name)}</span>
+    <span style="${dim}">${w.age} &middot; ${escHtml(L(genderKey))}</span>
+  </div>
+  <div style="${dim}">${escHtml(L('CYBUS.Worker.Effectiveness'))} ${workerEffectiveness(w)}/10 &middot; ${escHtml(L('CYBUS.Worker.Morale'))} ${w.morale} &middot; ${escHtml(L('CYBUS.Worker.Productivity'))} ${w.productivity}</div>
+  <p style="font-style:italic;margin:7px 0">${escHtml(w.description ?? '')}</p>
+  ${row(L('CYBUS.Worker.LookHair'), `${l.hair ?? '—'}, ${l.style ?? ''}`.trim())}
+  ${row(L('CYBUS.Worker.LookEyes'), l.eyes ?? '—')}
+  ${row(L('CYBUS.Worker.LookHeight'), `${l.height ?? '—'} cm`)}
+  ${row(L('CYBUS.Worker.LookWeight'), `${l.weight ?? '—'} kg`)}
+  ${row(L('CYBUS.Worker.LookBuild'), l.build ?? '—')}
+  ${row(L('CYBUS.Worker.LookBeauty'), `${l.beautyWord ?? '—'} (${l.beauty ?? 0}/10)`)}
+  <div style="margin-top:7px">${traits}</div>
+</div>`;
+}

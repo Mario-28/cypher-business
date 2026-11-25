@@ -7,7 +7,7 @@
 
 import { uid, d, clampInt } from '../constants.mjs';
 import { rollTraits, rollAppearance } from './people.mjs';
-import { FIRST, LAST } from './names.mjs';
+import { LAST, pickFirstName } from './names.mjs';
 
 // Re-exported so the app can retire its local pools.
 export const RIVAL_NAMES = [
@@ -143,7 +143,7 @@ export function rollFigure(c, rng = Math.random, existing = []) {
   const age = 28 + d(rng, 30); // 29–59 — schemers of consequence
   let name = '';
   for (let tries = 0; tries < 12; tries++) {
-    const candidate = `${FIRST[Math.floor(rng() * FIRST.length)]} ${LAST[Math.floor(rng() * LAST.length)]}`;
+    const candidate = `${pickFirstName(gender, rng)} ${LAST[Math.floor(rng() * LAST.length)]}`;
     if (!existing.includes(candidate)) { name = candidate; break; }
     name = name || candidate;
   }
@@ -208,7 +208,11 @@ export function rivalBand(attack, defense) {
 export function rivalWeekOutcome(b, c, band, labelFor = null) {
   const before = c.pressure ?? 0;
   const delta = band === 'rivalBig' ? 2 : band === 'rivalEdge' ? 1 : band === 'bizBig' ? -2 : -1;
-  c.pressure = clampInt(before + delta, 0, RIVAL_PRESSURE_MAX);
+  // v1.40 — success attracts attention: a fat, profitable business builds
+  // resentment even in the weeks it wins the exchange. Additive on every
+  // band, so it slows de-escalation without ever flipping a win into buildup.
+  const bump = (b.attributes?.profit ?? 5) >= 8 ? 1 : 0;
+  c.pressure = clampInt(before + delta + bump, 0, RIVAL_PRESSURE_MAX);
   const notes = [];
   let spawned = null;
   if (c.pressure >= RIVAL_PRESSURE_MAX) {
